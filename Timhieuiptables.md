@@ -52,7 +52,7 @@ Chains
 <p>Nói chung, tùy chọn 1 ở trên được sử dụng cho chuỗi INPUT nơi chúng tôi muốn kiểm soát những gì được phép truy cập vào máy tính của chúng tôi và tùy chọn 2 sẽ được sử dụng cho chuỗi OUTPUT, nơi chúng ta thường tin tưởng vào lưu lượng truy cập đang để lại (có nguồn gốc từ) máy của chúng tôi.</p>
 <h4> 2. Bắt đầu tìm hiểu </h4>
 <p>Làm việc với iptables từ dòng lệnh đòi hỏi quyền root, vì vậy bạn cần phải trở thành root cho hầu hết mọi thứ chúng ta sẽ làm.</p>
-
+<pre>QUAN TRỌNG: Chúng tôi sẽ tắt iptables và đặt lại các quy tắc tường lửa của bạn, vì vậy nếu bạn dựa vào tường lửa Linux làm tuyến phòng thủ chính, bạn nên biết về điều này.</pre>
 <p>Iptables nên được cài đặt mặc định trên tất cả các CentOS 5.x và 6.x cài đặt. Bạn có thể kiểm tra để xem nếu iptables được cài đặt trên hệ thống của bạn bằng cách:</p>
 <pre>
 $ rpm-q iptables
@@ -92,10 +92,88 @@ target     prot opt source               destination
 <pre>
 <li>QUAN TRỌNG: </li> Tại thời điểm này chúng tôi sẽ xóa bộ quy tắc mặc định. Nếu bạn đang kết nối từ xa đến một máy chủ thông qua SSH cho hướng dẫn này sau đó có một khả năng rất thực tế mà bạn có thể khóa mình ra khỏi máy tính của bạn. Bạn phải đặt chính sách đầu vào mặc định để chấp nhận trước khi làm sạch các quy tắc hiện tại, và sau đó thêm một quy tắc vào đầu để rõ ràng cho phép bạn truy cập để ngăn chặn chống lại chính mình.
 </pre>
+<p>Chúng ta sẽ sử dụng cách tiếp cận dựa trên ví dụ để kiểm tra các lệnh iptables khác nhau. Trong ví dụ đầu tiên, chúng ta sẽ tạo ra một bộ quy tắc rất đơn giản để thiết lập tường lửa SPI (Stateful Packet Inspection) cho phép tất cả các kết nối đi ra nhưng chặn tất cả các kết nối không mong muốn:</p>
+<code># iptables -P INPUT ACCEPT
+# iptables -F
+# iptables -A INPUT -i lo -j ACCEPT
+# iptables -A INPUT -m state --state ESTABLISHED, RELATED -j ACCEPT
+# iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+# iptables -P INPUT DROP
+# iptables -P FORWARD DROP
+# iptables -P OUTPUT ACCEPT
+# iptables -L -v</code>
 
+<p> đầu ra sau đây:</p>
+<code>Chain INPUT (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 ACCEPT     all  --  lo     any     anywhere             anywhere
+    0     0 ACCEPT     all  --  any    any     anywhere             anywhere            state RELATED,ESTABLISHED
+    0     0 ACCEPT     tcp  --  any    any     anywhere             anywhere            tcp dpt:ssh
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+</code>
 
-<p></p>
-<p></p>
-<p></p>
-<p></p>
+<p>Bây giờ hãy nhìn vào mỗi trong 8 lệnh ở trên và hiểu chính xác những gì chúng ta vừa làm:</p>
+<p>1. iptables -P INPUT ACCEPT Nếu kết nối từ xa trước hết chúng ta phải tạm thời thiết lập chính sách mặc định cho chuỗi INPUT để ACCEPT nếu không thì khi chúng ta thực hiện các quy tắc hiện tại, chúng ta sẽ bị khóa khỏi máy chủ của chúng tôi.</p>
+<p>2. iptables -F Chúng tôi sử dụng -F để chuyển đổi tất cả các quy tắc hiện có để chúng ta bắt đầu với một trạng thái sạch sẽ để thêm các quy tắc mới.</p>
+<p>3. iptables -A INPUT -i lo -j ACCEPT Bây giờ là lúc bắt đầu thêm một số quy tắc. Chúng ta sử dụng -A để chuyển sang thêm (hoặc thêm) một quy tắc vào một chuỗi cụ thể, chuỗi INPUT trong trường hợp này. Sau đó, chúng ta sử dụng -i chuyển đổi (cho giao diện) để xác định các gói phù hợp hoặc định cho giao diện lo (localhost, 127.0.0.1) và cuối cùng là -j (nhảy) tới hành động đích cho các gói phù hợp với quy tắc - trong trường hợp ACCEPT. Vì vậy, quy tắc này sẽ cho phép tất cả các gói tin đến cho giao diện localhost được chấp nhận. Điều này thường được yêu cầu như nhiều ứng dụng phần mềm mong đợi để có thể giao tiếp với bộ điều hợp localhost.</p>
+<p>4. iptables -A INPUT -m state --state ESTABLISHED, RELATED -j ACCEPT Đây là nguyên tắc mà hầu hết công việc, và một lần nữa chúng ta thêm (-A) vào chuỗi INPUT. Ở đây chúng ta đang sử dụng -m switch để load một module (state). Mô-đun nhà nước có thể kiểm tra trạng thái của một gói tin và xác định nó là MỚI, THÀNH LẬP hay LIÊN QUAN. NEW đề cập đến các gói tin đến là các kết nối mới mà không được khởi tạo bởi hệ thống máy chủ lưu trữ. ESTABLISHED và RELATED đề cập đến các gói tin gửi đến là một phần của một kết nối đã được thiết lập hoặc có liên quan đến và kết nối đã được thiết lập.</p>
+<p>5. iptables -A INPUT -p tcp -dport 22 -j ACCEPT Ở đây chúng ta thêm một quy tắc cho phép kết nối SSH qua tcp port 22. Đây là cách để ngăn chặn tình cờ lockouts khi làm việc trên các hệ thống từ xa qua kết nối SSH. Chúng ta sẽ giải thích chi tiết hơn về quy tắc này sau.</p>
+<p>6. iptables -P INPUT DROP Các -P chuyển đặt chính sách mặc định trên chuỗi quy định. Vì vậy bây giờ chúng ta có thể thiết lập chính sách mặc định trên chuỗi INPUT để DROP. Điều này có nghĩa là nếu một gói đến không khớp với một trong các quy tắc sau đây nó sẽ bị bỏ. Nếu chúng tôi kết nối từ xa thông qua SSH và không thêm quy tắc trên, chúng ta sẽ chỉ khóa chúng tôi ra khỏi hệ thống vào thời điểm này.</p>
+<p>7. iptables -P HƯỚNG DROP Tương tự như vậy, ở đây chúng tôi đã thiết lập chính sách mặc định trên chuỗi mong muốn được thả như chúng ta không sử dụng máy tính của chúng tôi như một router vì vậy không nên có bất kỳ gói tin đi qua máy tính của chúng tôi.</p>
+<p>8. iptables -P OUTPUT ACCEPT và cuối cùng, chúng tôi đã thiết lập chính sách mặc định trên chuỗi OUTPUT để CHẤP NHẬN như chúng ta muốn cho phép tất cả lưu lượng đi (như chúng ta tin tưởng người dùng của chúng ta).</p>
+<p>9. iptables -L -v Cuối cùng, chúng ta có thể liệt kê (-L) các quy tắc mà chúng ta vừa bổ sung để kiểm tra chúng đã được nạp chính xác hay không.</p>
 
+<p>Cuối cùng, điều cuối cùng chúng ta cần làm là lưu lại các quy tắc của chúng tôi để lần sau khi chúng ta khởi động lại máy tính của chúng tôi các quy tắc của chúng tôi được tự động nạp lại:
+</p>
+<code>
+ # /sbin/service iptables save
+</code>
+<p>Điều này thực thi tập lệnh iptables init, chạy / sbin / iptables-save và ghi cấu hình iptables hiện tại vào / etc / sysconfig / iptables. Khi khởi động lại, tập lệnh init của iptables reapplies các quy tắc được lưu trong /etc/sysconfig/iptables bằng cách sử dụng lệnh /sbin/iptables-restore .</p>
+<p>Rõ ràng gõ tất cả các lệnh này vào trình bao có thể trở nên nhàm chán, do đó, cách dễ nhất để làm việc với iptables là tạo một tập lệnh đơn giản để làm tất cả cho bạn. Các lệnh ở trên có thể được nhập vào trình soạn thảo văn bản ưa thích của bạn và được lưu dưới dạng tệp văn bản cảnh báo, ví dụ:</p>
+<pre>
+#!/bin/bash
+#
+# iptables example configuration script
+#
+# Flush all current rules from iptables
+#
+ iptables -F
+#
+# Allow SSH connections on tcp port 22
+# This is essential when working on remote servers via SSH to prevent locking yourself out of the system
+#
+ iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+#
+# Set default policies for INPUT, FORWARD and OUTPUT chains
+#
+ iptables -P INPUT DROP
+ iptables -P FORWARD DROP
+ iptables -P OUTPUT ACCEPT
+#
+# Set access for localhost
+#
+ iptables -A INPUT -i lo -j ACCEPT
+#
+# Accept packets belonging to established and related connections
+#
+ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+#
+# Save settings
+#
+ /sbin/service iptables save
+#
+# List rules
+#
+ iptables -L -v
+</pre>
+<p>Lưu ý: Chúng ta cũng có thể bình luận kịch bản của chúng ta để nhắc nhở chúng ta những gì đã làm.</p>
+<p>Chạy lệnh:</p>
+<pre># chmod + x myfirewall</pre>
+<p>Bây giờ chúng ta có thể chỉ cần chỉnh sửa kịch bản của chúng ta và chạy nó từ trình bao bằng lệnh sau:</p>
+<code># ./myfirewall</code>
+<p></p>
+<p></p>
+<p></p>
