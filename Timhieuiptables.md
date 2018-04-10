@@ -52,7 +52,7 @@ Chains
 <p>Nói chung, tùy chọn 1 ở trên được sử dụng cho chuỗi INPUT nơi chúng tôi muốn kiểm soát những gì được phép truy cập vào máy tính của chúng tôi và tùy chọn 2 sẽ được sử dụng cho chuỗi OUTPUT, nơi chúng ta thường tin tưởng vào lưu lượng truy cập đang để lại (có nguồn gốc từ) máy của chúng tôi.</p>
 <h4> 2. Bắt đầu tìm hiểu </h4>
 <p>Làm việc với iptables từ dòng lệnh đòi hỏi quyền root, vì vậy bạn cần phải trở thành root cho hầu hết mọi thứ chúng ta sẽ làm.</p>
-<pre>QUAN TRỌNG: Chúng tôi sẽ tắt iptables và đặt lại các quy tắc tường lửa của bạn, vì vậy nếu bạn dựa vào tường lửa Linux làm tuyến phòng thủ chính, bạn nên biết về điều này.</pre>
+<pre>QUAN TRỌNG: Chúng ta sẽ tắt iptables và đặt lại các quy tắc tường lửa của bạn, vì vậy nếu bạn dựa vào tường lửa Linux làm tuyến phòng thủ chính, bạn nên biết về điều này.</pre>
 <p>Iptables nên được cài đặt mặc định trên tất cả các CentOS 5.x và 6.x cài đặt. Bạn có thể kiểm tra để xem nếu iptables được cài đặt trên hệ thống của bạn bằng cách:</p>
 <pre>
 $ rpm-q iptables
@@ -89,11 +89,11 @@ target     prot opt source               destination
 # system-config-securitylevel
 </code>
 <h4> 3. Viết một bộ quy tắc đơn giản  </h4>
-<pre>
-<li>QUAN TRỌNG: </li> Tại thời điểm này chúng tôi sẽ xóa bộ quy tắc mặc định. Nếu bạn đang kết nối từ xa đến một máy chủ thông qua SSH cho hướng dẫn này sau đó có một khả năng rất thực tế mà bạn có thể khóa mình ra khỏi máy tính của bạn. Bạn phải đặt chính sách đầu vào mặc định để chấp nhận trước khi làm sạch các quy tắc hiện tại, và sau đó thêm một quy tắc vào đầu để rõ ràng cho phép bạn truy cập để ngăn chặn chống lại chính mình.
-</pre>
+<code>
+QUAN TRỌNG: Tại thời điểm này chúng ta sẽ xóa bộ quy tắc mặc định. Nếu bạn đang kết nối từ xa đến một máy chủ thông qua SSH cho hướng dẫn này sau đó có một khả năng rất thực tế mà bạn có thể khóa mình ra khỏi máy tính của bạn. Bạn phải đặt chính sách đầu vào mặc định để chấp nhận trước khi làm sạch các quy tắc hiện tại, và sau đó thêm một quy tắc vào đầu để rõ ràng cho phép bạn truy cập để ngăn chặn chống lại chính mình.
+</code>
 <p>Chúng ta sẽ sử dụng cách tiếp cận dựa trên ví dụ để kiểm tra các lệnh iptables khác nhau. Trong ví dụ đầu tiên, chúng ta sẽ tạo ra một bộ quy tắc rất đơn giản để thiết lập tường lửa SPI (Stateful Packet Inspection) cho phép tất cả các kết nối đi ra nhưng chặn tất cả các kết nối không mong muốn:</p>
-<code># iptables -P INPUT ACCEPT
+<pre># iptables -P INPUT ACCEPT
 # iptables -F
 # iptables -A INPUT -i lo -j ACCEPT
 # iptables -A INPUT -m state --state ESTABLISHED, RELATED -j ACCEPT
@@ -101,10 +101,10 @@ target     prot opt source               destination
 # iptables -P INPUT DROP
 # iptables -P FORWARD DROP
 # iptables -P OUTPUT ACCEPT
-# iptables -L -v</code>
+# iptables -L -v</pre>
 
 <p> đầu ra sau đây:</p>
-<code>Chain INPUT (policy DROP 0 packets, 0 bytes)
+<pre>Chain INPUT (policy DROP 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
     0     0 ACCEPT     all  --  lo     any     anywhere             anywhere
     0     0 ACCEPT     all  --  any    any     anywhere             anywhere            state RELATED,ESTABLISHED
@@ -113,7 +113,7 @@ Chain FORWARD (policy DROP 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
 Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
-</code>
+</pre>
 
 <p>Bây giờ hãy nhìn vào mỗi trong 8 lệnh ở trên và hiểu chính xác những gì chúng ta vừa làm:</p>
 <p>1. iptables -P INPUT ACCEPT Nếu kết nối từ xa trước hết chúng ta phải tạm thời thiết lập chính sách mặc định cho chuỗi INPUT để ACCEPT nếu không thì khi chúng ta thực hiện các quy tắc hiện tại, chúng ta sẽ bị khóa khỏi máy chủ của chúng tôi.</p>
