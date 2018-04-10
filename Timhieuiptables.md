@@ -172,39 +172,61 @@ Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
 <p>Lưu ý: Chúng ta cũng có thể bình luận kịch bản của chúng ta để nhắc nhở chúng ta những gì đã làm.</p>
 <p>Chạy lệnh:</p>
 <pre># chmod + x myfirewall</pre>
-<p>Bây giờ chúng ta có thể chỉ cần chỉnh sửa kịch bản của chúng ta và chạy nó từ trình bao bằng lệnh sau:</p>
+<p> Bây giờ chúng ta có thể chỉ cần chỉnh sửa kịch bản của chúng ta và chạy nó từ trình bao bằng lệnh sau:</p>
 <code># ./myfirewall</code>
 <h4>4. Giao diện</h4>
 <p>Trong ví dụ trước của chúng ta, chúng ta đã thấy cách chúng ta có thể chấp nhận tất cả các gói dữ liệu đến trên một giao diện cụ thể, trong trường hợp này là giao diện localhost:</p>
 <pre>iptables -A INPUT -i lo -j ACCEPT</pre>
-<p>Giả sử chúng ta có 2 giao diện riêng biệt, eth0 là kết nối nội bộ LAN và modem dialup ppp0 (hoặc có thể eth1 cho một nic) mà là kết nối internet bên ngoài của chúng tôi. Chúng ta có thể muốn cho phép tất cả các gói tin gửi đến trên mạng LAN nội bộ của chúng tôi nhưng vẫn lọc các gói dữ liệu đến trên kết nối internet bên ngoài của chúng tôi. Chúng ta có thể làm như sau:</p>
+<p> Giả sử chúng ta có 2 giao diện riêng biệt, eth0 là kết nối nội bộ LAN và modem dialup ppp0 (hoặc có thể eth1 cho một nic) mà là kết nối internet bên ngoài của chúng tôi. Chúng ta có thể muốn cho phép tất cả các gói tin gửi đến trên mạng LAN nội bộ của chúng tôi nhưng vẫn lọc các gói dữ liệu đến trên kết nối internet bên ngoài của chúng tôi. Chúng ta có thể làm như sau:</p>
 <code>iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -i eth0 -j ACCEPT</code>
-<p>Nhưng hãy cẩn thận - nếu chúng ta để cho phép tất cả các gói cho giao diện internet bên ngoài của chúng ta (ví dụ, modem quay số ppp0):</p>
+<p> Nhưng hãy cẩn thận - nếu chúng ta để cho phép tất cả các gói cho giao diện internet bên ngoài của chúng ta (ví dụ, modem quay số ppp0):</p>
 <code>iptables -A INPUT -i ppp0 -j ACCEPT</code>
-<p>Chúng ta đã có thể có hiệu quả chỉ cần vô hiệu tường lửa của chúng ta!</p>
+<p> Chúng ta đã có thể có hiệu quả chỉ cần vô hiệu tường lửa của chúng ta!</p>
 <h4>5. Các địa chỉ IP</h4>
-<p>Việc mở rộng toàn bộ giao diện cho các gói tin đến có thể không đủ hạn chế và bạn có thể muốn kiểm soát nhiều hơn về những gì để cho phép và những gì để từ chối. Cho phép giả sử chúng ta có một mạng máy tính nhỏ sử dụng mạng con riêng 192.168.0.x. Chúng ta có thể mở tường lửa của chúng ta đến các gói tin gửi đến từ một địa chỉ IP tin cậy duy nhất (ví dụ 192.168.0.4):</p>
+<p> Việc mở rộng toàn bộ giao diện cho các gói tin đến có thể không đủ hạn chế và bạn có thể muốn kiểm soát nhiều hơn về những gì để cho phép và những gì để từ chối. Cho phép giả sử chúng ta có một mạng máy tính nhỏ sử dụng mạng con riêng 192.168.0.x. Chúng ta có thể mở tường lửa của chúng ta đến các gói tin gửi đến từ một địa chỉ IP tin cậy duy nhất (ví dụ 192.168.0.4):</p>
 <code># Accept packets from trusted IP addresses
  iptables -A INPUT -s 192.168.0.4 -j ACCEPT # change the IP address as appropriate</code>
-<p>Breaking lệnh này xuống, trước tiên chúng ta nối (-A) một quy tắc vào chuỗi INPUT cho địa chỉ IP 192.168.0.4 (để nhận ACCEPT) tất cả các gói (cũng lưu ý chúng ta có thể sử dụng ký hiệu # để thêm ý kiến nội tuyến vào tài liệu kịch bản của chúng ta với bất cứ điều gì sau khi # bị bỏ qua và coi như là một nhận xét).</p>
-<p>Rõ ràng nếu chúng ta muốn cho phép các gói tin đến từ một loạt các địa chỉ IP, chúng ta chỉ cần thêm một quy tắc cho mỗi địa chỉ IP đáng tin cậy và điều đó sẽ làm việc tốt. Nhưng nếu chúng ta có rất nhiều trong số họ, có thể dễ dàng hơn để thêm một loạt các địa chỉ IP trong một lần. Để làm điều này, chúng ta có thể sử dụng một netmask hoặc ký hiệu slash chuẩn để xác định một phạm vi địa chỉ IP. Ví dụ: nếu chúng ta muốn mở tường lửa cho tất cả các gói tin gửi đến từ phạm vi 192.168.0.x (ở đó x = 1 đến 254), chúng ta có thể sử dụng một trong hai phương pháp sau:</p>
+<p> Breaking lệnh này xuống, trước tiên chúng ta nối (-A) một quy tắc vào chuỗi INPUT cho địa chỉ IP 192.168.0.4 (để nhận ACCEPT) tất cả các gói (cũng lưu ý chúng ta có thể sử dụng ký hiệu # để thêm ý kiến nội tuyến vào tài liệu kịch bản của chúng ta với bất cứ điều gì sau khi # bị bỏ qua và coi như là một nhận xét).</p>
+<p> Rõ ràng nếu chúng ta muốn cho phép các gói tin đến từ một loạt các địa chỉ IP, chúng ta chỉ cần thêm một quy tắc cho mỗi địa chỉ IP đáng tin cậy và điều đó sẽ làm việc tốt. Nhưng nếu chúng ta có rất nhiều trong số họ, có thể dễ dàng hơn để thêm một loạt các địa chỉ IP trong một lần. Để làm điều này, chúng ta có thể sử dụng một netmask hoặc ký hiệu slash chuẩn để xác định một phạm vi địa chỉ IP. Ví dụ: nếu chúng ta muốn mở tường lửa cho tất cả các gói tin gửi đến từ phạm vi 192.168.0.x (ở đó x = 1 đến 254), chúng ta có thể sử dụng một trong hai phương pháp sau:</p>
 <pre># Accept packets from trusted IP addresses
  iptables -A INPUT -s 192.168.0.0/24 -j ACCEPT  # using standard slash notation
  iptables -A INPUT -s 192.168.0.0/255.255.255.0 -j ACCEPT # using a subnet mask</pre>
-<p>Cuối cùng, cũng như lọc đối với một địa chỉ IP duy nhất, chúng ta cũng có thể phù hợp với địa chỉ MAC cho thiết bị đã cho. Để làm điều này, chúng ta cần tải một mô-đun (mô đun mac) cho phép lọc chống lại các địa chỉ mac. Trước đó chúng ta đã thấy một ví dụ khác về việc sử dụng các mô-đun để mở rộng chức năng của iptables khi chúng ta sử dụng mô-đun nhà nước để khớp với các gói tin ESTABLISHED và RELATED. Ở đây chúng ta sử dụng mô đun mac để kiểm tra địa chỉ mac của nguồn gói tin ngoài địa chỉ IP của nó:
+<p> Cuối cùng, cũng như lọc đối với một địa chỉ IP duy nhất, chúng ta cũng có thể phù hợp với địa chỉ MAC cho thiết bị đã cho. Để làm điều này, chúng ta cần tải một mô-đun (mô đun mac) cho phép lọc chống lại các địa chỉ mac. Trước đó chúng ta đã thấy một ví dụ khác về việc sử dụng các mô-đun để mở rộng chức năng của iptables khi chúng ta sử dụng mô-đun nhà nước để khớp với các gói tin ESTABLISHED và RELATED. Ở đây chúng ta sử dụng mô đun mac để kiểm tra địa chỉ mac của nguồn gói tin ngoài địa chỉ IP của nó:
 </p>
 <pre># Accept packets from trusted IP addresses
  iptables -A INPUT -s 192.168.0.4 -m mac --mac-source 00:50:8D:FD:E6:32 -j ACCEPT</pre>
-<p>Đầu tiên chúng ta sử dụng -m mac để tải mô đun mac và sau đó chúng ta sử dụng --mac-source để xác định địa chỉ mac của địa chỉ IP nguồn (192.168.0.4). Bạn sẽ cần phải tìm ra địa chỉ MAC của mỗi thiết bị Ethernet mà bạn muốn lọc. Chạy ifconfig (hoặc iwconfig cho các thiết bị không dây) như là root sẽ cung cấp cho bạn địa chỉ mac.</p>
-<p>Điều này có thể hữu ích trong việc ngăn ngừa giả mạo địa chỉ IP nguồn vì nó sẽ cho phép bất kỳ gói nào thực sự có nguồn gốc từ 192.168.0.4 (có địa chỉ MAC 00: 50: 8D: FD: E6: 32) nhưng sẽ chặn mọi gói bị giả mạo đến từ địa chỉ đó. Lưu ý, lọc địa chỉ mac sẽ không hoạt động trên internet nhưng nó chắc chắn hoạt động tốt trên mạng LAN.</p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
+<p> Đầu tiên chúng ta sử dụng -m mac để tải mô đun mac và sau đó chúng ta sử dụng --mac-source để xác định địa chỉ mac của địa chỉ IP nguồn (192.168.0.4). Bạn sẽ cần phải tìm ra địa chỉ MAC của mỗi thiết bị Ethernet mà bạn muốn lọc. Chạy ifconfig (hoặc iwconfig cho các thiết bị không dây) như là root sẽ cung cấp cho bạn địa chỉ mac.</p>
+<p> Điều này có thể hữu ích trong việc ngăn ngừa giả mạo địa chỉ IP nguồn vì nó sẽ cho phép bất kỳ gói nào thực sự có nguồn gốc từ 192.168.0.4 (có địa chỉ MAC 00: 50: 8D: FD: E6: 32) nhưng sẽ chặn mọi gói bị giả mạo đến từ địa chỉ đó. Lưu ý, lọc địa chỉ mac sẽ không hoạt động trên internet nhưng nó chắc chắn hoạt động tốt trên mạng LAN.</p>
+<h4>6. Port và Protocols</h4>
+
+<p> Ở trên chúng ta đã thấy làm thế nào chúng ta có thể thêm các quy tắc để tường lửa của chúng tôi để lọc với các gói tin phù hợp với một giao diện cụ thể hoặc một địa chỉ IP nguồn. Điều này cho phép truy cập đầy đủ thông qua tường lửa của chúng tôi đến một số nguồn đáng tin cậy (máy chủ). Bây giờ chúng ta sẽ xem xét làm thế nào chúng ta có thể lọc chống lại các giao thức và cổng để tinh chỉnh thêm những gói dữ liệu đến mà chúng ta cho phép và những gì chúng ta chặn.</p>
+<p> Trước khi chúng ta có thể bắt đầu, chúng ta cần phải biết giao thức và số cổng mà một dịch vụ nhất định sử dụng. Đối với một ví dụ đơn giản, hãy nhìn vào bittorrent. Bittorrent sử dụng giao thức tcp trên cổng 6881, vì vậy chúng ta cần phải cho phép tất cả các gói tcp trên cổng đích (cổng mà chúng đến máy của chúng ta) 6881:</p>
+<pre>
+# Accept tcp packets on destination port 6881 (bittorrent)
+ iptables -A INPUT -p tcp --dport 6881 -j ACCEPT
+</pre>
+<p>Ở đây chúng ta nối (-A) một quy tắc vào chuỗi INPUT cho các gói tin phù hợp với giao thức tcp (  -p tcp ) và nhập máy của chúng ta vào cổng đích 6881 ( --dport 6881 ).</p>
+<p>Lưu ý: Để sử dụng các trận đấu như đích hoặc nguồn cổng ( --dport hoặc --sport ), bạn phải đầu tiên chỉ định giao thức (TCP, UDP, ICMP, tất cả).</p>
+<p>Chúng ta cũng có thể mở rộng ở trên để bao gồm một dải cổng, ví dụ, cho phép tất cả các gói tin tcp trên dải từ 6881 đến 6890:
+</p>
+<p># Accept tcp packets on destination ports 6881-6890
+ iptables -A INPUT -p tcp --dport 6881:6890 -j ACCEPT</p>
+ <h4>7. Putting It All Together</h4>
+<p>Bây giờ chúng ta đã thấy những điều cơ bản, chúng ta có thể bắt đầu kết hợp các quy tắc này.</p>
+<p>Một dịch vụ UNIX / Linux phổ biến là dịch vụ SSH (secure shell) cho phép đăng nhập từ xa. Mặc định SSH sử dụng cổng 22 và một lần nữa sử dụng giao thức tcp. Vì vậy, nếu chúng ta muốn cho phép đăng nhập từ xa, chúng ta cần cho phép các kết nối tcp trên cổng 22:</p>
+<pre># Accept tcp packets on destination port 22 (SSH)
+ iptables -A INPUT -p tcp --dport 22 -j ACCEPT</pre>
+<p>Điều này sẽ mở ra cổng 22 (SSH) cho tất cả các kết nối tcp đến, đây là một mối đe dọa tiềm ẩn về an ninh vì tin tặc có thể thử lực nứt trên các tài khoản có mật khẩu yếu. Tuy nhiên, nếu chúng ta biết địa chỉ IP của các máy từ xa đáng tin cậy sẽ được sử dụng để đăng nhập bằng SSH, chúng ta có thể hạn chế quyền truy cập vào chỉ các địa chỉ IP nguồn này. Ví dụ: nếu chúng ta chỉ muốn mở truy cập SSH trên LAN cá nhân (192.168.0.x), chúng tôi có thể giới hạn truy cập vào phạm vi địa chỉ IP nguồn này:</p>
+<pre># Accept tcp packets on destination port 22 (SSH) from private LAN
+ iptables -A INPUT -p tcp -s 192.168.0.0/24 --dport 22 -j ACCEPT
+</pre>
+<p>Sử dụng bộ lọc IP nguồn cho phép chúng tôi mở an toàn quyền truy cập SSH trên cổng 22 tới địa chỉ IP đáng tin cậy. Ví dụ, chúng ta có thể sử dụng phương pháp này để cho phép đăng nhập từ xa giữa công việc và máy chủ. Đối với tất cả các địa chỉ IP khác, cổng (và dịch vụ) sẽ đóng kín như thể dịch vụ đã bị vô hiệu hóa để các hacker sử dụng các phương pháp quét cổng có thể sẽ vượt qua chúng ta.</p>
+<h4>8. Tóm tắt</h4>
+<p>Chúng ta đã không nhận ra bề mặt của những gì có thể đạt được với iptables, nhưng hy vọng bài này đã cung cấp nền tảng tốt từ những điều cơ bản từ đó có thể xây dựng các bộ quy tắc phức tạp hơn.</p>
+<h4>9. Liên kết</h4>
+<p>1. http://www.centos.org/docs/5/html/Deployment_Guide-en-US/ch-fw.html</p>
+<p>2. http://www.centos.org/docs/5/html/Deployment_Guide-en-US/ch-iptables.html</p>
+<p>3. http://ip2location.com/free/visitor-blocker</p>
+
+
