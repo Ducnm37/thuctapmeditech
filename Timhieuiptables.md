@@ -27,6 +27,9 @@ Nội dung
 <li>
 <a href="#tom_tat"> 8. Tóm tắt </a>
 </li>
+ <li>
+<a href="#lien_ket"> 9. Liên kết </a>
+</li>
 </ul>
 <h4> 1. Giới thiệu </h4>
 <p>CentOS có một tường lửa cực mạnh được xây dựng trong, thường được gọi là iptables, nhưng chính xác hơn là iptables / netfilter. Iptables là mô đun userpace, bit mà bạn, người dùng, tương tác với tại dòng lệnh để nhập các quy tắc tường lửa vào các bảng được xác định trước. Netfilter là một mô-đun hạt nhân, được tích hợp trong hạt nhân, thực sự lọc. Có nhiều giao diện người dùng GUI cho iptables, cho phép người dùng thêm hoặc xác định các quy tắc dựa trên một điểm và một giao diện người dùng, nhưng thường thiếu sự linh hoạt trong việc sử dụng giao diện dòng lệnh và giới hạn sự hiểu biết của người dùng về những gì thực sự xảy ra. Chúng ta sẽ học giao diện dòng lệnh của iptables.</p>
