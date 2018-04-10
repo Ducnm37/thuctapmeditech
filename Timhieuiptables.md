@@ -28,7 +28,7 @@ Nội dung
 <a href="#tom_tat"> 8. Tóm tắt </a>
 </li>
 </ul>
-# <h4> 1. Giới thiệu </h4>
+<h4> 1. Giới thiệu </h4>
 <p>CentOS có một tường lửa cực mạnh được xây dựng trong, thường được gọi là iptables, nhưng chính xác hơn là iptables / netfilter. Iptables là mô đun userpace, bit mà bạn, người dùng, tương tác với tại dòng lệnh để nhập các quy tắc tường lửa vào các bảng được xác định trước. Netfilter là một mô-đun hạt nhân, được tích hợp trong hạt nhân, thực sự lọc. Có nhiều giao diện người dùng GUI cho iptables, cho phép người dùng thêm hoặc xác định các quy tắc dựa trên một điểm và một giao diện người dùng, nhưng thường thiếu sự linh hoạt trong việc sử dụng giao diện dòng lệnh và giới hạn sự hiểu biết của người dùng về những gì thực sự xảy ra. Chúng ta sẽ học giao diện dòng lệnh của iptables.</p>
 <p>Trước khi chúng ta có thể nắm bắt được với iptables, chúng ta cần phải có ít nhất một sự hiểu biết cơ bản về cách nó hoạt động. Iptables sử dụng khái niệm địa chỉ IP, các giao thức (tcp, udp, icmp) và các cổng. Chúng ta không cần phải là những chuyên gia trong lĩnh vực này để bắt đầu (vì chúng ta có thể tìm kiếm bất kỳ thông tin nào chúng ta cần), nhưng giúp bạn có được sự hiểu biết chung.</p>
 <p>Iptables đặt các quy tắc vào các chuỗi được xác định trước (INPUT, OUTPUT và FORWARD) được kiểm tra đối với bất kỳ lưu lượng mạng nào (các gói IP) có liên quan đến các chuỗi đó và quyết định được làm gì với mỗi gói tin dựa trên kết quả của các quy tắc đó, hoặc bỏ gói tin. Các hành động này được gọi là các mục tiêu, trong đó hai mục tiêu được xác định trước phổ biến nhất là DROP để thả một gói hoặc ACCEPT để chấp nhận một gói tin.</p>
@@ -52,10 +52,52 @@ Chains
 <p>Nói chung, tùy chọn 1 ở trên được sử dụng cho chuỗi INPUT nơi chúng tôi muốn kiểm soát những gì được phép truy cập vào máy tính của chúng tôi và tùy chọn 2 sẽ được sử dụng cho chuỗi OUTPUT, nơi chúng ta thường tin tưởng vào lưu lượng truy cập đang để lại (có nguồn gốc từ) máy của chúng tôi.</p>
 <h4> 2. Bắt đầu tìm hiểu </h4>
 <p>Làm việc với iptables từ dòng lệnh đòi hỏi quyền root, vì vậy bạn cần phải trở thành root cho hầu hết mọi thứ chúng ta sẽ làm.</p>
-<code>
+<pre>
 QUAN TRỌNG: Chúng tôi sẽ tắt iptables và đặt lại các quy tắc tường lửa của bạn, vì vậy nếu bạn dựa vào tường lửa Linux làm tuyến phòng thủ chính, bạn nên biết về điều này.
+</pre>
+<p>Iptables nên được cài đặt mặc định trên tất cả các CentOS 5.x và 6.x cài đặt. Bạn có thể kiểm tra để xem nếu iptables được cài đặt trên hệ thống của bạn bằng cách:</p>
+<pre>
+$ rpm-q iptables
+iptables-1.4.7-5.1.el6_2.x86_64
+</pre>
+<p>Và để xem nếu iptables thực sự chạy, chúng ta có thể kiểm tra rằng các mô-đun iptables được nạp và sử dụng -L để kiểm tra các quy tắc hiện đang được nạp:</p>
+<pre>
+# lsmod | grep ip_tables
+ip_tables 29288 1 iptable_filter
+x_tables 29192 6 ip6t_REJECT, ip6_tables, ipt_REJECT, xt_state, xt_tcpudp, ip_tables
+</pre>
+<pre>
+# iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     icmp --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     tcp  --  anywhere             anywhere            state NEW tcp dpt:ssh 
+REJECT     all  --  anywhere             anywhere            reject-with icmp-host-prohibited 
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  anywhere             anywhere            reject-with icmp-host-prohibited 
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination        
+</pre>
+
+<p>Ở trên, chúng ta sẽ thấy tập hợp các quy tắc mặc định trên một hệ thống CentOS 6. Lưu ý rằng dịch vụ SSH được cho phép theo mặc định.</p>
+<p>Nếu iptables không chạy, bạn có thể kích hoạt nó bằng cách chạy:</p>
+
+<code>
+# system-config-securitylevel
 </code>
+<h4> 3. Viết một bộ quy tắc đơn giản  </h4>
+<code>
+<li>QUAN TRỌNG: </li> Tại thời điểm này chúng tôi sẽ xóa bộ quy tắc mặc định. Nếu bạn đang kết nối từ xa đến một máy chủ thông qua SSH cho hướng dẫn này sau đó có một khả năng rất thực tế mà bạn có thể khóa mình ra khỏi máy tính của bạn. Bạn phải đặt chính sách đầu vào mặc định để chấp nhận trước khi làm sạch các quy tắc hiện tại, và sau đó thêm một quy tắc vào đầu để rõ ràng cho phép bạn truy cập để ngăn chặn chống lại chính mình.
+</code>
+
+
 <p></p>
 <p></p>
 <p></p>
 <p></p>
+
