@@ -174,6 +174,37 @@ Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
 <pre># chmod + x myfirewall</pre>
 <p>Bây giờ chúng ta có thể chỉ cần chỉnh sửa kịch bản của chúng ta và chạy nó từ trình bao bằng lệnh sau:</p>
 <code># ./myfirewall</code>
+<h4>4. Giao diện</h4>
+<p>Trong ví dụ trước của chúng ta, chúng ta đã thấy cách chúng ta có thể chấp nhận tất cả các gói dữ liệu đến trên một giao diện cụ thể, trong trường hợp này là giao diện localhost:</p>
+<pre>iptables -A INPUT -i lo -j ACCEPT</pre>
+<p>Giả sử chúng ta có 2 giao diện riêng biệt, eth0 là kết nối nội bộ LAN và modem dialup ppp0 (hoặc có thể eth1 cho một nic) mà là kết nối internet bên ngoài của chúng tôi. Chúng ta có thể muốn cho phép tất cả các gói tin gửi đến trên mạng LAN nội bộ của chúng tôi nhưng vẫn lọc các gói dữ liệu đến trên kết nối internet bên ngoài của chúng tôi. Chúng ta có thể làm như sau:</p>
+<code>iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -i eth0 -j ACCEPT</code>
+<p>Nhưng hãy cẩn thận - nếu chúng ta để cho phép tất cả các gói cho giao diện internet bên ngoài của chúng ta (ví dụ, modem quay số ppp0):</p>
+<code>iptables -A INPUT -i ppp0 -j ACCEPT</code>
+<p>Chúng ta đã có thể có hiệu quả chỉ cần vô hiệu tường lửa của chúng ta!</p>
+<h4>5. Các địa chỉ IP</h4>
+<p>Việc mở rộng toàn bộ giao diện cho các gói tin đến có thể không đủ hạn chế và bạn có thể muốn kiểm soát nhiều hơn về những gì để cho phép và những gì để từ chối. Cho phép giả sử chúng ta có một mạng máy tính nhỏ sử dụng mạng con riêng 192.168.0.x. Chúng ta có thể mở tường lửa của chúng ta đến các gói tin gửi đến từ một địa chỉ IP tin cậy duy nhất (ví dụ 192.168.0.4):</p>
+<code># Accept packets from trusted IP addresses
+ iptables -A INPUT -s 192.168.0.4 -j ACCEPT # change the IP address as appropriate</code>
+<p>Breaking lệnh này xuống, trước tiên chúng ta nối (-A) một quy tắc vào chuỗi INPUT cho địa chỉ IP 192.168.0.4 (để nhận ACCEPT) tất cả các gói (cũng lưu ý chúng ta có thể sử dụng ký hiệu # để thêm ý kiến nội tuyến vào tài liệu kịch bản của chúng ta với bất cứ điều gì sau khi # bị bỏ qua và coi như là một nhận xét).</p>
+<p>Rõ ràng nếu chúng ta muốn cho phép các gói tin đến từ một loạt các địa chỉ IP, chúng ta chỉ cần thêm một quy tắc cho mỗi địa chỉ IP đáng tin cậy và điều đó sẽ làm việc tốt. Nhưng nếu chúng ta có rất nhiều trong số họ, có thể dễ dàng hơn để thêm một loạt các địa chỉ IP trong một lần. Để làm điều này, chúng ta có thể sử dụng một netmask hoặc ký hiệu slash chuẩn để xác định một phạm vi địa chỉ IP. Ví dụ: nếu chúng ta muốn mở tường lửa cho tất cả các gói tin gửi đến từ phạm vi 192.168.0.x (ở đó x = 1 đến 254), chúng ta có thể sử dụng một trong hai phương pháp sau:</p>
+<pre># Accept packets from trusted IP addresses
+ iptables -A INPUT -s 192.168.0.0/24 -j ACCEPT  # using standard slash notation
+ iptables -A INPUT -s 192.168.0.0/255.255.255.0 -j ACCEPT # using a subnet mask</pre>
+<p>Cuối cùng, cũng như lọc đối với một địa chỉ IP duy nhất, chúng ta cũng có thể phù hợp với địa chỉ MAC cho thiết bị đã cho. Để làm điều này, chúng ta cần tải một mô-đun (mô đun mac) cho phép lọc chống lại các địa chỉ mac. Trước đó chúng ta đã thấy một ví dụ khác về việc sử dụng các mô-đun để mở rộng chức năng của iptables khi chúng ta sử dụng mô-đun nhà nước để khớp với các gói tin ESTABLISHED và RELATED. Ở đây chúng ta sử dụng mô đun mac để kiểm tra địa chỉ mac của nguồn gói tin ngoài địa chỉ IP của nó:
+</p>
+<pre># Accept packets from trusted IP addresses
+ iptables -A INPUT -s 192.168.0.4 -m mac --mac-source 00:50:8D:FD:E6:32 -j ACCEPT</pre>
+<p>Đầu tiên chúng ta sử dụng -m mac để tải mô đun mac và sau đó chúng ta sử dụng --mac-source để xác định địa chỉ mac của địa chỉ IP nguồn (192.168.0.4). Bạn sẽ cần phải tìm ra địa chỉ MAC của mỗi thiết bị Ethernet mà bạn muốn lọc. Chạy ifconfig (hoặc iwconfig cho các thiết bị không dây) như là root sẽ cung cấp cho bạn địa chỉ mac.</p>
+<p>Điều này có thể hữu ích trong việc ngăn ngừa giả mạo địa chỉ IP nguồn vì nó sẽ cho phép bất kỳ gói nào thực sự có nguồn gốc từ 192.168.0.4 (có địa chỉ MAC 00: 50: 8D: FD: E6: 32) nhưng sẽ chặn mọi gói bị giả mạo đến từ địa chỉ đó. Lưu ý, lọc địa chỉ mac sẽ không hoạt động trên internet nhưng nó chắc chắn hoạt động tốt trên mạng LAN.</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
 <p></p>
 <p></p>
 <p></p>
