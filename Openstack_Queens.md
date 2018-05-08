@@ -551,8 +551,8 @@ Comment dòng log_dir trong [DEFAULT] section.
    
 <h4>Cài đặt NEUTRON </h4>
 
-    <li>Cài đặt và cấu hình neutron   </li>
-     <li>Tạo database cho neutron   </li>
+Cài đặt và cấu hình neutron  
+Tạo database cho neutron   
   <pre>mysql -u root -pWelcome123   </pre>
   <pre>MariaDB [(none)] CREATE DATABASE neutron;
   MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' \
@@ -560,19 +560,19 @@ Comment dòng log_dir trong [DEFAULT] section.
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' \
   IDENTIFIED BY 'Welcome123';
   </pre>
-      <li>Khai báo biến môi trường   </li>
+Khai báo biến môi trường 
   <pre>$ . admin-openrc
    </pre>
-    <li>Tạo user Neutron   </li>
+Tạo user Neutron
   <pre>$ openstack user create --domain default --password-prompt neutron
    </pre>
-    <li>Add the admin role to the neutron user:   </li>
+Add the admin role to the neutron user:   
   <pre>$ openstack role add --project service --user neutron admin
    </pre>
-    <li>Create the neutron service entity:   </li>
+Create the neutron service entity:
   <pre>$ openstack service create --name neutron \
   --description "OpenStack Networking" network   </pre>
-    <li>Create the Networking service API endpoints:   </li>
+Create the Networking service API endpoints:
   <pre>$ openstack endpoint create --region RegionOne \
   network public http://controller:9696
   
