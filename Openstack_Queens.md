@@ -606,28 +606,95 @@ metadata_proxy_shared_secret = Welcome123   </pre>
   neutron-metadata-agent  </pre>
   <li>Sửa file /etc/neutron/neutron.conf    </li>
   <pre>[database]
-connection = mysql+pymysql://neutron:Welcome123@controller/neutron   </pre>
-   <li>   </li>
-  <pre>   </pre>
-      <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-   <li>   </li>
-  <pre>   </pre>
-      <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-
+connection = mysql+pymysql://neutron:Welcome123@controller/neutron
+[DEFAULT]
+core_plugin = ml2
+service_plugins =
+auth_strategy = keystone
+notify_nova_on_port_status_changes = true
+notify_nova_on_port_data_changes = true
+transport_url = rabbit://openstack:Welcome123@controller
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = neutron
+password = Welcome123
+[nova]
+auth_url = http://controller:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = nova
+password = Welcome123
+</pre>
+<li>Sửa file /etc/neutron/plugins/ml2/ml2_conf.ini   </li>
+<pre>[ml2]
+type_drivers = flat,vlan
+tenant_network_types =
+mechanism_drivers = linuxbridge
+extension_drivers = port_security
+[ml2_type_flat]
+flat_networks = provider
+[securitygroup]
+enable_ipset = true
+</pre>
+<li>Sửa file  /etc/neutron/plugins/ml2/linuxbridge_agent.ini   </li>
+<pre>[linux_bridge]
+physical_interface_mappings = provider:ens33
+[vxlan]
+enable_vxlan = false
+[securitygroup]
+enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+</pre>
+<li>Sửa file /etc/neutron/dhcp_agent.ini   </li>
+<pre>[DEFAULT]
+interface_driver = linuxbridge
+dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+enable_isolated_metadata = true   </pre>
+<li>Đồng bộ database cho neutron   </li>
+<pre># su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
+  --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron   </pre>
+<li>Restart the Compute API service:   </li>
+<pre># service nova-api restart   </pre>
+<li>Khởi động lại các dịch vụ của neutron   </li>
+<pre># service neutron-server restart
+# service neutron-linuxbridge-agent restart
+# service neutron-dhcp-agent restart
+# service neutron-metadata-agent restart   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
 
 
 
