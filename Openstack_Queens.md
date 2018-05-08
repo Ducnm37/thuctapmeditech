@@ -350,12 +350,52 @@ $ openstack endpoint create --region RegionOne \
   image admin http://controller:9292
 </pre>
 
-
-
-
-
-
-
+<h6>4.1.3. Cài đặt các gói và cấu hình cho dịch vụ glance</h6>
+<pre># apt install glance </pre>
+<li>Chỉnh sửa file /etc/glance/glance-api.conf </li>
+<pre>
+[database]
+connection = mysql+pymysql://glance:Welcome123@controller/glance
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = glance
+password = Welcome123
+[paste_deploy]
+flavor = keystone
+[glance_store]
+stores = file,http
+default_store = file
+filesystem_store_datadir = /var/lib/glance/images/
+</pre>
+<li>Sửa file /etc/glance/glance-registry.conf </li>
+<pre>
+[database]
+connection = mysql+pymysql://glance:Welcome123@controller/glance
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = glance
+password = Welcome123
+[paste_deploy]
+flavor = keystone
+</pre>
+<li> Đồng bộ database cho glance </li>
+<pre># su -s /bin/sh -c "glance-manage db_sync" glance</pre>
+<li>Khởi động lại dịch vụ Glance</li>
+<pre># service glance-registry restart
+# service glance-api restart
+</pre>
 
 
 
