@@ -537,13 +537,77 @@ Comment dòng log_dir trong [DEFAULT] section.
 | cell1 | 109e1d4b-536a-40d0-83c6-5f121b82b650 |
 | cell0 | 00000000-0000-0000-0000-000000000000 |
 +-------+--------------------------------------+   </pre>
-     <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
-  <pre>   </pre>
-    <li>   </li>
+     <li>Kết thúc bước cài đặt và cấu hình nova   </li>
+  <pre># service nova-api restart
+# service nova-consoleauth restart
+# service nova-scheduler restart
+# service nova-conductor restart
+# service nova-novncproxy restart   </pre>
+    <li>Kiểm tra xem các service của nova hoạt động tốt hay chưa bằng lệnh dưới
+
+   </li>
+  <pre> openstack compute service list
+   </pre>
+   
+<h4>Cài đặt NEUTRON </h4>
+
+    <li>Cài đặt và cấu hình neutron   </li>
+     <li>Tạo database cho neutron   </li>
+  <pre>mysql -u root -pWelcome123   </pre>
+  <pre>MariaDB [(none)] CREATE DATABASE neutron;
+  MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' \
+  IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' \
+  IDENTIFIED BY 'Welcome123';
+  </pre>
+      <li>Khai báo biến môi trường   </li>
+  <pre>$ . admin-openrc
+   </pre>
+    <li>Tạo user Neutron   </li>
+  <pre>$ openstack user create --domain default --password-prompt neutron
+   </pre>
+    <li>Add the admin role to the neutron user:   </li>
+  <pre>$ openstack role add --project service --user neutron admin
+   </pre>
+    <li>Create the neutron service entity:   </li>
+  <pre>$ openstack service create --name neutron \
+  --description "OpenStack Networking" network   </pre>
+    <li>Create the Networking service API endpoints:   </li>
+  <pre>$ openstack endpoint create --region RegionOne \
+  network public http://controller:9696
+  
+$ openstack endpoint create --region RegionOne \
+  network internal http://controller:9696
+ $ openstack endpoint create --region RegionOne \
+  network admin http://controller:9696
+ </pre>
+<li>Sửa file /etc/neutron/metadata_agent.ini   </li>
+  <pre>[DEFAULT]
+# ...
+nova_metadata_host = controller
+metadata_proxy_shared_secret = Welcome123   </pre>
+<li>Sửa file /etc/nova/nova.conf    </li>
+  <pre>[neutron]
+# ...
+url = http://controller:9696
+auth_url = http://controller:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = Welcome123
+service_metadata_proxy = true
+metadata_proxy_shared_secret = Welcome123   </pre>
+<li>Cài đặt packages Neutron   </li>
+ <pre> # apt install neutron-server neutron-plugin-ml2 \
+  neutron-linuxbridge-agent neutron-dhcp-agent \
+  neutron-metadata-agent  </pre>
+  <li>Sửa file /etc/neutron/neutron.conf    </li>
+  <pre>[database]
+connection = mysql+pymysql://neutron:Welcome123@controller/neutron   </pre>
+   <li>   </li>
   <pre>   </pre>
       <li>   </li>
   <pre>   </pre>
@@ -553,7 +617,16 @@ Comment dòng log_dir trong [DEFAULT] section.
   <pre>   </pre>
     <li>   </li>
   <pre>   </pre>
-   
+   <li>   </li>
+  <pre>   </pre>
+      <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
 
 
 
