@@ -398,6 +398,30 @@ flavor = keystone
 </pre>
 
 
+<li> Thiết lập biến môi trường :</li>
+<pre>$ . admin-openrc</pre>
+<li> Download the source image: </li>
+<pre>$ wget http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img</pre>
+<li>Upload file image vừa tải về </li>
+<pre>
+ openstack image create "cirros" \
+  --file cirros-0.3.4-x86_64-disk.img \
+  --disk-format qcow2 --container-format bare \
+  --public
+  </pre>
+  <li>Kiểm tra</li>
+  <pre> openstack image list
+ </pre>
+ <pre>
+ root@controller:~# openstack image list
+ +--------------------------------------+--------+--------+
+ | ID                                   | Name   | Status |
+ +--------------------------------------+--------+--------+
+ | 19d53e24-2985-4f75-bd63-7568a5f2f10f | cirros | active |
+ +--------------------------------------+--------+--------+
+ root@controller:~#
+ </pre>
+
 
 
 
