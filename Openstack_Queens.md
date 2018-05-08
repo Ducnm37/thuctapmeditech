@@ -744,7 +744,7 @@ auth_url = http://controller:5000/v3
 username = placement
 password = Welcome123
 </pre>
-<li>Due to a packaging bug, remove the log_dir option from the [DEFAULT] section.   </li>
+<li>Xóa dòng log_dir trong [DEFAULT] section.   </li>
 
 <li>Sửa file /etc/nova/nova-compute.conf   </li>
 <pre>[libvirt]
