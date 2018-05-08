@@ -497,8 +497,47 @@ user_domain_name = default
 project_name = service
 username = nova
 password = Welcome123
+[DEFAULT]
+my_ip = 192.268.239.162
+use_neutron = True
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+[vnc]
+enabled = true
+server_listen = $my_ip
+server_proxyclient_address = $my_ip
+[glance]
+api_servers = http://controller:9292
+[oslo_concurrency]
+lock_path = /var/lib/nova/tmp
+[placement]
+# ...
+os_region_name = RegionOne
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://controller:5000/v3
+username = placement
+password = Welcome123
 </pre>
-    <li>   </li>
+Comment dòng log_dir trong [DEFAULT] section.
+    <li>Populate the nova-api database:   </li>
+  <pre># su -s /bin/sh -c "nova-manage api_db sync" nova   </pre>
+    <li>Register the cell0 database:   </li>
+  <pre># su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+   </pre>
+    <li>Create the cell1 cell:   </li>
+  <pre># su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova   </pre>
+    <li>Populate the nova database:   </li>
+  <pre># su -s /bin/sh -c "nova-manage db sync" nova   </pre>
+    <li># nova-manage cell_v2 list_cells   </li>
+  <pre>+-------+--------------------------------------+
+| Name  | UUID                                 |
++-------+--------------------------------------+
+| cell1 | 109e1d4b-536a-40d0-83c6-5f121b82b650 |
+| cell0 | 00000000-0000-0000-0000-000000000000 |
++-------+--------------------------------------+   </pre>
+     <li>   </li>
   <pre>   </pre>
     <li>   </li>
   <pre>   </pre>
@@ -506,9 +545,15 @@ password = Welcome123
   <pre>   </pre>
     <li>   </li>
   <pre>   </pre>
+      <li>   </li>
+  <pre>   </pre>
     <li>   </li>
   <pre>   </pre>
-  
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+   
 
 
 
