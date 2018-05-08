@@ -445,8 +445,70 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \
   IDENTIFIED BY 'Welcome123';
 </pre>
-
-
+<li>Khai báo biến môi trường</li>
+<pre>$ . admin-openrc</pre>
+<li>Tạo user </li>
+<pre> $ openstack user create --domain default --password-prompt nova </pre>
+<li>Add the admin role to the nova user: </li>
+<pre>$ openstack role add --project service --user nova admin</pre>
+<li>Tạo service </li>
+<pre>$ openstack service create --name nova \
+  --description "OpenStack Compute" compute</pre>
+  </li>Tạo endpoint</li>
+  <pre>
+  $ openstack endpoint create --region RegionOne \
+  compute public http://controller:8774/v2.1
+  $ openstack endpoint create --region RegionOne \
+  compute internal http://controller:8774/v2.1
+  $ openstack endpoint create --region RegionOne \
+  compute admin http://controller:8774/v2.1
+  </pre>
+  <li>Create a Placement service </li>
+  <pre>$ openstack user create --domain default --password-prompt placement</pre>
+  <li>Add the Placement user to the service project with the admin role:</li>
+<pre>$ openstack role add --project service --user placement admin  </pre>
+  <li>Create the Placement API entry in the service catalog:   </li>
+  <pre>$ openstack service create --name placement --description "Placement API" placement   </pre>
+    <li>Create the Placement API service endpoints:   </li>
+  <pre>
+  $ openstack endpoint create --region RegionOne placement public http://controller:8778
+  $ openstack endpoint create --region RegionOne placement internal http://controller:8778
+  $ openstack endpoint create --region RegionOne placement admin http://controller:8778
+</pre>
+    <li>Cài đặt các gói cho nova và cấu hình   </li>
+  <pre># apt install nova-api nova-conductor nova-consoleauth \
+  nova-novncproxy nova-scheduler nova-placement-api   </pre>
+    <li>Sửa file /etc/nova/nova.conf   </li>
+  <pre>[api_database]
+connection = mysql+pymysql://nova:Welcome123@controller/nova_api
+[database]
+connection = mysql+pymysql://nova:Welcome123@controller/nova 
+[DEFAULT]
+transport_url = rabbit://openstack:Welcome123@controller
+[api]
+auth_strategy = keystone
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = nova
+password = Welcome123
+</pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+    <li>   </li>
+  <pre>   </pre>
+  
 
 
 
