@@ -197,6 +197,11 @@ User=etcd
 [Install]
 WantedBy=multi-user.target
 </pre>
+<li> Khởi động lại dịch vụ </li>
+<pre>
+# systemctl enable etcd
+# systemctl start etcd
+</pre>
 
 
 <h4> 3. Cài đặt Keystone </h4>
@@ -205,29 +210,124 @@ WantedBy=multi-user.target
 <li> Đăng nhập vào MariaDB </li>
 <pre>mysql -u root -pWelcome123</pre>
 <li> Tạo user, database cho keystone </li>
+<pre>
+MariaDB [(none)]> CREATE DATABASE keystone;
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
+IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
+IDENTIFIED BY 'Welcome123';
+</pre>
+<li> Cài đặt các packages </li>
+<pre># apt install keystone  apache2 libapache2-mod-wsgi </pre>
+<li> Dùng lệnh vi sửa file  /etc/keystone/keystone.conf với nội dung sau : </li>
+<pre>
+[database]
+connection = mysql+pymysql://keystone:Welcome123@controller/keystone
+[token]
+provider = fernet
+</pre>
+<li> Đồng bộ database cho keystone </li>
+<pre> # su -s /bin/sh -c "keystone-manage db_sync" keystone </pre>
+<li> Khởi tạo kho lưu trữ khóa Fernet:</li>
+<pre>
+# keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+# keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+</pre>
+<li> Khởi động dịch vụ Identity </li>
+<pre>
+# keystone-manage bootstrap --bootstrap-password Welcome123 \
+  --bootstrap-admin-url http://controller:5000/v3/ \
+  --bootstrap-internal-url http://controller:5000/v3/ \
+  --bootstrap-public-url http://controller:5000/v3/ \
+  --bootstrap-region-id RegionOne
+ </pre>
+ <li> Sử dụng lệnh vi sửa file /etc/apache2/apache2.conf thêm vào dòng: </li>
+ <pre> ServerName controller </pre>
+ 
+ <li> Khởi động lại dịch vụ : </li>
+ <pre># service apache2 restart </pre>
+ <li> Cấu hình tài khoản </li>
+ <pre>
+$ export OS_USERNAME=admin
+$ export OS_PASSWORD=Welcome123
+$ export OS_PROJECT_NAME=admin
+$ export OS_USER_DOMAIN_NAME=Default
+$ export OS_PROJECT_DOMAIN_NAME=Default
+$ export OS_AUTH_URL=http://controller:5000/v3
+$ export OS_IDENTITY_API_VERSION=3
+</pre>
+
+<li> Tạo  domain, projects, users, and roles </li>
+<pre>openstack domain create --description "An Example Domain" example</pre>
+<pre>openstack project create --domain default \
+  --description "Service Project" service </pre>
+<pre>openstack project create --domain default \
+  --description "Demo Project" demo </pre>
+<pre>openstack user create --domain default \
+  --password-prompt demo </pre>
+<pre>openstack role create user </pre>
+<pre>openstack role add --project demo --user demo user </pre>
+
+<li> Verify </li>
+- Bỏ thiết lập trong biến môi trường của OS_TOKEN và OS_URL bằng lệnh
+<pre>$ unset OS_AUTH_URL </pre>
+-  Là người dùng quản trị, yêu cầu mã thông báo xác thực:
 
 
+<pre>$ openstack --os-auth-url http://controller:5000/v3 \
+  --os-project-domain-name Default --os-user-domain-name Default \
+  --os-project-name admin --os-username admin token issue </pre>
+<pre>$ openstack --os-auth-url http://controller:5000/v3 \
+  --os-project-domain-name Default --os-user-domain-name Default \
+  --os-project-name demo --os-username demo token issue </pre>
+  
+  <li> Tạo file admin-openrc với nội dung sau :</li>
+<pre>export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=Welcome123
+export OS_AUTH_URL=http://controller:5000/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2 </pre>
+ <li> Tạo file demo-openrc với nội dung sau :</li>
+ <pre>export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=demo
+export OS_USERNAME=demo
+export OS_PASSWORD=Welcome123
+export OS_AUTH_URL=http://controller:5000/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2</pre>
 
 
+<li> Chạy script admin-openrc </li>
+<pre> $ . admin-openrc </pre>
+<li> Gõ lệnh dưới để kiểm tra biến môi trường ở trên đã chính xác hay chưa </li>
+<pre> $ openstack token issue </pre>
+<h4> 4. Cài đặt Glance </h4>
+Glance là dịch vụ cung cấp các image (các hệ điều hành đã được đóng gói sẵn), các image này sử dụng theo cơ chế template để tạo ra các máy ảo. )
 
+Lưu ý: Thư mục chứa các file images trong hướng dẫn này là /var/lib/glance/images/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Glance có các thành phần sau:
+<ul>
+<li>glance-api:</li>
+<li>glance-registry:</li>
+<li>Database:</li>
+<li>Storage repository for image file</li>
+<li>Metadata definition service</li>
+</ul>
+<h6> 4.1. Tạo database và endpoint cho glance </h6>
+<li> Đăng nhập vào mysql <li>
+<pre> mysql -uroot -pWelcome123 </pre>
+<pre>
+	 MariaDB [(none)]> CREATE DATABASE glance;
+	 MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' \
+  	 IDENTIFIED BY 'Welcome123';
+	 MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
+  	 IDENTIFIED BY 'Welcome123';
+        </pre>
 
 
 
