@@ -42,11 +42,32 @@ Sử dụng lệnh vi /etc/hosts sử file theo nội dụng sau trên controlle
  192.168.239.162    controller
  192.168.239.163    compute1
  </pre>
-<img src="https://github.com/anhict/images/blob/master/23.png?raw=true">
+
 
 <li> Kiểm tra ping trên controller node và compute1 node</li>
-<img src="https://github.com/anhict/images/blob/master/24.png?raw=true">
-<img src="https://github.com/anhict/images/blob/master/25.png?raw=true">
+<pre>
+root@compute1:~# ping google.com
+PING google.com (216.58.199.14) 56(84) bytes of data.
+64 bytes from hkg12s02-in-f14.1e100.net (216.58.199.14): icmp_seq=1 ttl=128 time=37.1 ms
+64 bytes from hkg12s02-in-f14.1e100.net (216.58.199.14): icmp_seq=2 ttl=128 time=39.3 ms
+64 bytes from hkg12s02-in-f14.1e100.net (216.58.199.14): icmp_seq=3 ttl=128 time=36.7 ms
+--- google.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 36.706/37.728/39.312/1.135 ms
+root@compute1:~#
+</pre>
+<pre>
+root@controller:~# ping google.com
+PING google.com (172.217.25.14) 56(84) bytes of data.
+64 bytes from hkg07s24-in-f14.1e100.net (172.217.25.14): icmp_seq=1 ttl=128 time=32.1 ms
+64 bytes from hkg07s24-in-f14.1e100.net (172.217.25.14): icmp_seq=2 ttl=128 time=31.1 ms
+64 bytes from hkg07s24-in-f14.1e100.net (172.217.25.14): icmp_seq=3 ttl=128 time=32.5 ms
+64 bytes from hkg07s24-in-f14.1e100.net (172.217.25.14): icmp_seq=4 ttl=128 time=28.0 ms
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3036ms
+rtt min/avg/max/mdev = 28.001/30.961/32.524/1.785 ms
+root@controller:~#
+</pre>
 
 <h6> 2.1.2 Cài đặt Network Time Protocol (NTP) </h6>
 <p><li> Cài đặt các packages </li></p>
