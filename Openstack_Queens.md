@@ -727,6 +727,29 @@ username = placement
 password = Welcome123
 </pre>
 <li>Due to a packaging bug, remove the log_dir option from the [DEFAULT] section.   </li>
+
+<li>Sửa file /etc/nova/nova-compute.conf   </li>
+<pre>[libvirt]
+virt_type = qemu   </pre>
+<li>Restart the Compute service:   </li>
+<pre># service nova-compute restart   </pre>
+<li>Trên controller node   </li>
+<pre>. admin-openrc
+$ openstack compute service list --service nova-compute
++----+-------+--------------+------+-------+---------+----------------------------+
+| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |
++----+-------+--------------+------+-------+---------+----------------------------+
+| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |
++----+-------+--------------+------+-------+---------+----------------------------+
+# su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+
+</pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
 <pre>   </pre>
 <li>   </li>
 <pre>   </pre>
@@ -738,8 +761,19 @@ password = Welcome123
 <pre>   </pre>
 <li>   </li>
 <pre>   </pre>
+<pre>   </pre>
 <li>   </li>
 <pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+<li>   </li>
+<pre>   </pre>
+
+
 
 
 
