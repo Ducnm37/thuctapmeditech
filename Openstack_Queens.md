@@ -31,9 +31,6 @@
 <li>Khởi động lại card mạng sau khi thiết lập IP tĩnh</li>
 
 <pre>ifdown –a && ifup –a </pre>
-<p> Ping kiểm tra : </p>
-<img src="https://github.com/anhict/images/blob/master/21.png?raw=true">
-<img src="https://github.com/anhict/images/blob/master/22.png?raw=true">
 <li>Cấu hình hostname</li>
 
 Sử dụng lệnh vi /etc/hosts sử file theo nội dụng sau trên controller node và compute1 node :
