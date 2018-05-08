@@ -329,6 +329,26 @@ Glance có các thành phần sau:
   	 IDENTIFIED BY 'Welcome123';
         </pre>
 
+<h6> 4.1.2. Cấu hình xác thực cho dịch vụ glance </h6>
+<li>Thiết lập biến môi trường:</li>
+<pre>$ . admin-openrc</pre>
+<li>Tạo user Glance </li>
+<pre>$ openstack user create --domain default --password-prompt glance</pre>
+<li>Add the admin role to the glance user and service project:</li>
+<pre>$ openstack role add --project service --user glance admin</pre>
+</li>Tạo glance service</li>
+<pre>$ openstack service create --name glance \
+  --description "OpenStack Image" image
+</pre>
+<li>Tạo các endpoint cho dịch vụ glance</li>
+<pre>
+$ openstack endpoint create --region RegionOne \
+  image public http://controller:9292
+$ openstack endpoint create --region RegionOne \
+  image internal http://controller:9292
+$ openstack endpoint create --region RegionOne \
+  image admin http://controller:9292
+</pre>
 
 
 
