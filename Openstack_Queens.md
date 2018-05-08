@@ -421,6 +421,30 @@ flavor = keystone
  +--------------------------------------+--------+--------+
  root@controller:~#
  </pre>
+ <h4>Cài đặt NOVA (Compute service)</h4>
+<h6>5.2. Cài đặt và cấu hình nova</h6>
+<li>Đăng nhập vào database với quyền root</li>
+<pre>mysql -uroot -pWelcome123</pre>
+<li>Tạo database</li>
+<pre>
+MariaDB [(none)]> CREATE DATABASE nova_api;
+MariaDB [(none)]> CREATE DATABASE nova;
+MariaDB [(none)]> CREATE DATABASE nova_cell0;
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' \
+  IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' \
+  IDENTIFIED BY 'Welcome123';
+
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \
+  IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \
+  IDENTIFIED BY 'Welcome123';
+
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \
+  IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \
+  IDENTIFIED BY 'Welcome123';
+</pre>
 
 
 
