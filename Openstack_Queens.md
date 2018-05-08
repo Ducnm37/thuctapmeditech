@@ -669,19 +669,64 @@ enable_isolated_metadata = true   </pre>
 # service neutron-linuxbridge-agent restart
 # service neutron-dhcp-agent restart
 # service neutron-metadata-agent restart   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
+<h4>6. Cài đặt trên node compute </h4>
+<li>Sửa file /etc/hosts với nội dung như bên dưới </li>
+<pre> 127.0.0.1       localhost compute1
+ 192.168.239.163     compute1
+ 192.168.239.162     controller   </pre>
+<li>Sửa file /etc/hostname   </li>
+<pre>compute1   </pre>
+<li>Dùng vi mở file /etc/network/interfaces và thiết lập như dưới   </li>
+<pre>
+# NIC EXT
+ auto ens33
+ iface ens33 inet static
+ address 192.168.239.163
+ netmask 255.255.255.0
+ gateway 192.168.239.2
+ dns-nameservers 8.8.8.8   </pre>
+<li>Khởi động lại network và đăng nhập lại với quyền root   </li>
+<pre> ifdown -a && ifup -a   </pre>
+<li>Cài đặt packages  </li>
+<pre># apt install nova-compute</pre>
+<li>Sửa file /etc/nova/nova.conf</li>
+<pre>[DEFAULT]
+my_ip = 192.168.239.163
+use_neutron = True
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+transport_url = rabbit://openstack:Welcome123@controller   
+[api]
+auth_strategy = keystone
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = nova
+password = NOVA_PASS
+[vnc]
+enabled = True
+server_listen = 0.0.0.0
+server_proxyclient_address = $my_ip
+novncproxy_base_url = http://192.168.239.162:6080/vnc_auto.html
+[glance]
+api_servers = http://controller:9292
+[oslo_concurrency]
+lock_path = /var/lib/nova/tmp
+[placement]
+os_region_name = RegionOne
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://controller:5000/v3
+username = placement
+password = Welcome123
+</pre>
+<li>Due to a packaging bug, remove the log_dir option from the [DEFAULT] section.   </li>
 <pre>   </pre>
 <li>   </li>
 <pre>   </pre>
