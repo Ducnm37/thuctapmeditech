@@ -1,4 +1,4 @@
-<h1> Cài đặt Openstack Queens theo docs mô hình Networking Provider </h1>
+<h1> Cài đặt Openstack Queens theo docs mô hình Provider networks </h1>
 <h2> I. Cài đặt cơ bản </h2>
 <h4>1. Chuẩn bị môi trường </h4>
 <h4><li> Mô hình mạng </li></h4>
@@ -198,7 +198,6 @@ initial-advertise-peer-urls: http://192.168.239.162:2380
 advertise-client-urls: http://192.168.239.162:2379
 listen-peer-urls: http://0.0.0.0:2380
 listen-client-urls: http://192.168.239.162:2379
-
 </pre>
 <li> Tạo file /lib/systemd/system/etcd.service </li>
 <pre>
@@ -341,12 +340,12 @@ Glance có các thành phần sau:
 <li> Đăng nhập vào mysql <li>
 <pre> mysql -uroot -pWelcome123 </pre>
 <pre>
-	 MariaDB [(none)]> CREATE DATABASE glance;
-	 MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' \
-  	 IDENTIFIED BY 'Welcome123';
-	 MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
-  	 IDENTIFIED BY 'Welcome123';
-        </pre>
+ MariaDB [(none)]> CREATE DATABASE glance;
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' \
+IDENTIFIED BY 'Welcome123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
+IDENTIFIED BY 'Welcome123';
+</pre>
 
 <h6> 4.1.2. Cấu hình xác thực cho dịch vụ glance </h6>
 <li>Thiết lập biến môi trường:</li>
@@ -573,8 +572,7 @@ Comment dòng log_dir trong [DEFAULT] section.
 |  5 | nova-consoleauth | controller | internal | enabled | up    | 2018-05-09T05:58:09.000000 |
 |  6 | nova-conductor   | controller | internal | enabled | up    | 2018-05-09T05:58:02.000000 |
 +----+------------------+------------+----------+---------+-------+----------------------------+
-
-   </pre>
+</pre>
    
 <h4>Cài đặt NEUTRON </h4>
 
@@ -615,7 +613,6 @@ nova_metadata_host = controller
 metadata_proxy_shared_secret = Welcome123   </pre>
 <li>Sửa file /etc/nova/nova.conf    </li>
   <pre>[neutron]
-# ...
 url = http://controller:9696
 auth_url = http://controller:5000
 auth_type = password
@@ -641,6 +638,8 @@ auth_strategy = keystone
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
 transport_url = rabbit://openstack:Welcome123@controller
+
+
 [keystone_authtoken]
 auth_uri = http://controller:5000
 auth_url = http://controller:5000
@@ -651,6 +650,8 @@ user_domain_name = default
 project_name = service
 username = neutron
 password = Welcome123
+
+
 [nova]
 auth_url = http://controller:5000
 auth_type = password
@@ -667,16 +668,20 @@ type_drivers = flat,vlan
 tenant_network_types =
 mechanism_drivers = linuxbridge
 extension_drivers = port_security
+
 [ml2_type_flat]
 flat_networks = provider
+
 [securitygroup]
 enable_ipset = true
 </pre>
 <li>Sửa file  /etc/neutron/plugins/ml2/linuxbridge_agent.ini   </li>
 <pre>[linux_bridge]
 physical_interface_mappings = provider:ens33
+
 [vxlan]
 enable_vxlan = false
+
 [securitygroup]
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
@@ -695,8 +700,8 @@ enable_isolated_metadata = true   </pre>
 <pre># service neutron-server restart
 # service neutron-linuxbridge-agent restart
 # service neutron-dhcp-agent restart
-# service neutron-metadata-agent restart   </pre>
-<h3>6. Cài đặt trên node compute </h4>
+# service neutron-metadata-agent restart</pre>
+<h3>6. Cài đặt trên node compute </h3>
 <li>Sửa file /etc/hosts với nội dung như bên dưới </li>
 <pre> 127.0.0.1       localhost compute1
  192.168.239.163     compute1
@@ -724,8 +729,10 @@ my_ip = 192.168.239.163
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 transport_url = rabbit://openstack:Welcome123@controller   
+
 [api]
 auth_strategy = keystone
+
 [keystone_authtoken]
 auth_uri = http://controller:5000
 auth_url = http://controller:5000
@@ -736,15 +743,18 @@ user_domain_name = default
 project_name = service
 username = nova
 password = NOVA_PASS
+
 [vnc]
 enabled = True
 server_listen = 0.0.0.0
 server_proxyclient_address = $my_ip
 novncproxy_base_url = http://192.168.239.162:6080/vnc_auto.html
+
 [glance]
 api_servers = http://controller:9292
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
+
 [placement]
 os_region_name = RegionOne
 project_domain_name = Default
@@ -772,7 +782,7 @@ $ openstack compute service list --service nova-compute
 +----+--------------+----------+------+---------+-------+----------------------------+
 # su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
 </pre>
-<li>Verify    </li>
+<li>Verify</li>
 <pre>$ . admin-openrc   
 $ openstack compute service list
 root@controller:~# openstack compute service list
@@ -888,9 +898,10 @@ password = Welcome123</pre>
 <li>Dùng lệnh vi sửa file /etc/neutron/plugins/ml2/linuxbridge_agent.ini  với nội dung:   </li>
 <pre>[linux_bridge]
 physical_interface_mappings = provider:ens33
-[vxlan]
+
 [vxlan]
 enable_vxlan = false
+
 [securitygroup]
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
