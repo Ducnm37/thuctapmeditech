@@ -548,12 +548,13 @@ Comment dòng log_dir trong [DEFAULT] section.
     <li>Populate the nova database:   </li>
   <pre># su -s /bin/sh -c "nova-manage db sync" nova   </pre>
     <li># nova-manage cell_v2 list_cells   </li>
-  <pre>+-------+--------------------------------------+
-| Name  | UUID                                 |
-+-------+--------------------------------------+
-| cell1 | 109e1d4b-536a-40d0-83c6-5f121b82b650 |
-| cell0 | 00000000-0000-0000-0000-000000000000 |
-+-------+--------------------------------------+   </pre>
+  <pre>+-------+--------------------------------------+------------------------------------+-------------------------------------------------+
+|  Name |                 UUID                 |           Transport URL            |               Database Connection               |
++-------+--------------------------------------+------------------------------------+-------------------------------------------------+
+| cell0 | 00000000-0000-0000-0000-000000000000 |               none:/               | mysql+pymysql://nova:****@controller/nova_cell0 |
+| cell1 | bca97ce7-5143-41a9-93d3-75e410dd509a | rabbit://openstack:****@controller |    mysql+pymysql://nova:****@controller/nova    |
++-------+--------------------------------------+------------------------------------+-------------------------------------------------+
+   </pre>
      <li>Kết thúc bước cài đặt và cấu hình nova   </li>
   <pre># service nova-api restart
 # service nova-consoleauth restart
