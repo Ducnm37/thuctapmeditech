@@ -754,11 +754,11 @@ virt_type = qemu   </pre>
 <li>Trên controller node   </li>
 <pre>. admin-openrc
 $ openstack compute service list --service nova-compute
-+----+-------+--------------+------+-------+---------+----------------------------+
-| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |
-+----+-------+--------------+------+-------+---------+----------------------------+
-| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |
-+----+-------+--------------+------+-------+---------+----------------------------+
++----+--------------+----------+------+---------+-------+----------------------------+
+| ID | Binary       | Host     | Zone | Status  | State | Updated At                 |
++----+--------------+----------+------+---------+-------+----------------------------+
+|  8 | nova-compute | compute1 | nova | enabled | up    | 2018-05-09T01:36:10.000000 |
++----+--------------+----------+------+---------+-------+----------------------------+
 # su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
 </pre>
 <li>Verify    </li>
@@ -842,26 +842,93 @@ root@controller:~# nova-status upgrade check
 | Result: Success           |
 | Details: None             |
 +---------------------------+
-root@controller:~#
-   </pre>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
+root@controller:~#</pre>
+<h6> Cài đặt Neutron </h4>
+<li>Cài đặt các thành phần:</li>
+<pre># apt install neutron-linuxbridge-agent</pre>
+<li> Dùng lệnh vi sửa file /etc/neutron/neutron.conf với nội dung sau:  </li>
+<pre>
+[DEFAULT]
+transport_url = rabbit://openstack:Welcome123@controller
+auth_strategy = keystone
+[keystone_authtoken]
+# ...
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = neutron
+password = Welcome123
+</pre>
+<li> Sửa file /etc/nova/nova.conf </li>
+<pre>[neutron]
+url = http://controller:9696
+auth_url = http://controller:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = Welcome123</pre>
+<li>Dùng lệnh vi sửa file /etc/neutron/plugins/ml2/linuxbridge_agent.ini  với nội dung:   </li>
+<pre>[linux_bridge]
+physical_interface_mappings = provider:ens33
+[vxlan]
+[vxlan]
+enable_vxlan = false
+[securitygroup]
+enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+</pre>
+<li>Khởi động lại dịch vụ   </li>
+<pre> # service nova-compute restart
+# service neutron-linuxbridge-agent restart</pre>
+ <h4> Cài đặt HORIZON (dashboad) </h4>
+<li>Cài đặt packages   </li>
+<pre># apt install openstack-dashboard</pre>
+<li>Chỉnh sửa file /etc/openstack-dashboard/local_settings.py với nội dung sau:   </li>
+<pre>OPENSTACK_HOST = "controller"
+ALLOWED_HOSTS = ['*']
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+CACHES = {
+    'default': {
+         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+         'LOCATION': 'controller:11211',
+    }
+}
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "image": 2,
+    "volume": 2,
+}
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
+OPENSTACK_NEUTRON_NETWORK = {
+    ...
+    'enable_router': False,
+    'enable_quotas': False,
+    'enable_ipv6': False,
+    'enable_distributed_router': False,
+    'enable_ha_router': False,
+    'enable_lb': False,
+    'enable_firewall': False,
+    'enable_vpn': False,
+    'enable_fip_topology_check': False,
+}
+TIME_ZONE = "Asia/Ho_Chi_Minh"
+(Chạy lệnh timedatectl set-timezone Asia/Ho_Chi_Minh để đồng bộ thời gian nếu cần).
+</pre>
+<li> Dùng vi sửa file  /etc/apache2/conf-available/openstack-dashboard.conf với nội dung sau:   </li>
+<pre>WSGIApplicationGroup %{GLOBAL}   </pre>
+<li>Khởi động lại dịch vụ apache2  </li>
+<pre># service apache2 reload   </pre>
 <li>   </li>
 <pre>   </pre>
 <li>   </li>
