@@ -565,6 +565,15 @@ Comment dòng log_dir trong [DEFAULT] section.
 
    </li>
   <pre> openstack compute service list
+  root@controller:~# openstack compute service list
++----+------------------+------------+----------+---------+-------+----------------------------+
+| ID | Binary           | Host       | Zone     | Status  | State | Updated At                 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+|  1 | nova-scheduler   | controller | internal | enabled | up    | 2018-05-09T05:58:07.000000 |
+|  5 | nova-consoleauth | controller | internal | enabled | up    | 2018-05-09T05:58:09.000000 |
+|  6 | nova-conductor   | controller | internal | enabled | up    | 2018-05-09T05:58:02.000000 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+
    </pre>
    
 <h4>Cài đặt NEUTRON </h4>
