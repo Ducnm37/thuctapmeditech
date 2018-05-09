@@ -688,7 +688,7 @@ enable_isolated_metadata = true   </pre>
 # service neutron-linuxbridge-agent restart
 # service neutron-dhcp-agent restart
 # service neutron-metadata-agent restart   </pre>
-<h4>6. Cài đặt trên node compute </h4>
+<h3>6. Cài đặt trên node compute </h4>
 <li>Sửa file /etc/hosts với nội dung như bên dưới </li>
 <pre> 127.0.0.1       localhost compute1
  192.168.239.163     compute1
@@ -707,6 +707,7 @@ enable_isolated_metadata = true   </pre>
 <li>Khởi động lại network và đăng nhập lại với quyền root   </li>
 <pre> ifdown -a && ifup -a   </pre>
 <li>Cài đặt packages  </li>
+<pre># apt install python-openstackclient </pre>
 <pre># apt install nova-compute</pre>
 <li>Sửa file /etc/nova/nova.conf</li>
 <pre>[DEFAULT]
