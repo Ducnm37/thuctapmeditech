@@ -111,7 +111,7 @@ init 6
 </pre>
 <pre>
 [mysqld]
-bind-address = 192.168.239.162
+bind-address = 0.0.0.0
 
 default-storage-engine = innodb
 innodb_file_per_table = on
