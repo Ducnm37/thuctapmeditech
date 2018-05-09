@@ -760,14 +760,90 @@ $ openstack compute service list --service nova-compute
 | 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |
 +----+-------+--------------+------+-------+---------+----------------------------+
 # su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
-
 </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
+<li>Verify    </li>
+<pre>$ . admin-openrc   
+$ openstack compute service list
+root@controller:~# openstack compute service list
++----+------------------+------------+----------+---------+-------+----------------------------+
+| ID | Binary           | Host       | Zone     | Status  | State | Updated At                 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+|  5 | nova-consoleauth | controller | internal | enabled | up    | 2018-05-09T01:31:18.000000 |
+|  6 | nova-scheduler   | controller | internal | enabled | up    | 2018-05-09T01:31:18.000000 |
+|  7 | nova-conductor   | controller | internal | enabled | up    | 2018-05-09T01:31:21.000000 |
+|  8 | nova-compute     | compute1   | nova     | enabled | down  | 2018-05-08T13:46:23.000000 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+</pre>
+<pre>
+root@controller:~# openstack catalog list
++-----------+-----------+-----------------------------------------+
+| Name      | Type      | Endpoints                               |
++-----------+-----------+-----------------------------------------+
+| keystone  | identity  | RegionOne                               |
+|           |           |   admin: http://controller:5000/v3/     |
+|           |           | RegionOne                               |
+|           |           |   internal: http://controller:5000/v3/  |
+|           |           | RegionOne                               |
+|           |           |   public: http://controller:5000/v3/    |
+|           |           |                                         |
+| placement | placement | RegionOne                               |
+|           |           |   admin: http://controller:8778         |
+|           |           | RegionOne                               |
+|           |           |   public: http://controller:8778        |
+|           |           | RegionOne                               |
+|           |           |   internal: http://controller:8778      |
+|           |           |                                         |
+| glance    | image     | RegionOne                               |
+|           |           |   admin: http://controller:9292         |
+|           |           | RegionOne                               |
+|           |           |   public: http://controller:9292        |
+|           |           | RegionOne                               |
+|           |           |   internal: http://controller:9292      |
+|           |           |                                         |
+| nova      | compute   | RegionOne                               |
+|           |           |   public: http://controller:8774/v2.1   |
+|           |           | RegionOne                               |
+|           |           |   admin: http://controller:8774/v2.1    |
+|           |           | RegionOne                               |
+|           |           |   internal: http://controller:8774/v2.1 |
+|           |           |                                         |
+| neutron   | network   | RegionOne                               |
+|           |           |   admin: http://controller:9696         |
+|           |           | RegionOne                               |
+|           |           |   public: http://controller:9696        |
+|           |           | RegionOne                               |
+|           |           |   internal: http://controller:9696      |
+|           |           |                                         |
++-----------+-----------+-----------------------------------------+
+root@controller:~#
+</pre>
+<pre>root@controller:~# openstack image list
++--------------------------------------+--------+--------+
+| ID                                   | Name   | Status |
++--------------------------------------+--------+--------+
+| 4974052f-5fec-4bad-b3f0-492e175a67f4 | cirros | active |
++--------------------------------------+--------+--------+
+root@controller:~#</pre>
+
+<pre>
+root@controller:~# nova-status upgrade check
++---------------------------+
+| Upgrade Check Results     |
++---------------------------+
+| Check: Cells v2           |
+| Result: Success           |
+| Details: None             |
++---------------------------+
+| Check: Placement API      |
+| Result: Success           |
+| Details: None             |
++---------------------------+
+| Check: Resource Providers |
+| Result: Success           |
+| Details: None             |
++---------------------------+
+root@controller:~#
+   </pre>
 <pre>   </pre>
 <li>   </li>
 <pre>   </pre>
