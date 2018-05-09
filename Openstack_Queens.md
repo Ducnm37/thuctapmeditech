@@ -1,8 +1,9 @@
-<h1> Cài đặt Openstack Queens theo docs </h1>
+<h1> Cài đặt Openstack Queens theo docs mô hình Networking Provider </h1>
 <h2> I. Cài đặt cơ bản </h2>
 <h4>1. Chuẩn bị môi trường </h4>
 <h4><li> Mô hình mạng </li></h4>
 <img src="https://github.com/anhict/images/blob/master/net.PNG?raw=true">
+<li> Sử dụng 2 node đã cài sẵn Ubuntu phiên bản 14.04.</li>
 <h4> <li> 2. Cài đặt trên controller node </li></h4>
 <p> Lưu ý: </p>
 <ul>
@@ -898,7 +899,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
          'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-         'LOCATION': 'controller:11211',
+         'LOCATION': '192.168.239.162:11211',
     }
 }
 OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
@@ -929,10 +930,28 @@ TIME_ZONE = "Asia/Ho_Chi_Minh"
 <pre>WSGIApplicationGroup %{GLOBAL}   </pre>
 <li>Khởi động lại dịch vụ apache2  </li>
 <pre># service apache2 reload   </pre>
-<li>   </li>
-<pre>   </pre>
-<li>   </li>
-<pre>   </pre>
+
+<h3>Sử dụng Dashboard </h3>
+
+<li>Giao diện màn hình đăng nhập.</li>
+<img src="https://github.com/anhict/images/blob/master/28.PNG?raw=true">
+<li> Di chuyển đến tab Admin >> Network >> Networks >> Create Network</li>
+<img src="https://github.com/anhict/images/blob/master/29.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/30.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/31.PNG?raw=true">
+
+<li> Di chuyển đến tab Project >> Compute >>  Instances >> Launch Instance  để tạo các VM   </li>
+<img src="https://github.com/anhict/images/blob/master/32.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/33.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/34.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/35.PNG?raw=true">
+
+
+<li> Quá trình tạo máy ảo : </li>
+<img src="https://github.com/anhict/images/blob/master/36.PNG?raw=true">
+<img src="https://github.com/anhict/images/blob/master/37.PNG?raw=true">
+<li> Ping kiểm tra: </li>
+<img src="https://github.com/anhict/images/blob/master/38.PNG?raw=true">
 
 
 
