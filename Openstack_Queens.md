@@ -708,6 +708,7 @@ enable_isolated_metadata = true   </pre>
 <pre> ifdown -a && ifup -a   </pre>
 <li>Cài đặt packages  </li>
 <pre># apt install python-openstackclient </pre>
+<h4>Cài đặt Nova compute </h4>
 <pre># apt install nova-compute</pre>
 <li>Sửa file /etc/nova/nova.conf</li>
 <pre>[DEFAULT]
