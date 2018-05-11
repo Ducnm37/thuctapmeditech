@@ -10,6 +10,17 @@
 <p><li> Đăng nhập với quyền root trên tất cả các bước cài đặt.</li> </p>
 <p><li> Các thao tác sửa file trong hướng dẫn này sử dụng lệnh vi hoặc vim</li> </p>
 <p><li> Password thống nhất cho tất cả các dịch vụ là Welcome123</li> </p>
+ <li>Cấu hình file /etc/hosts và /etc/resolv.conf </li>
+ <pre>
+127.0.0.1   localhost 
+127.0.0.1   controller
+10.10.10.40 controller
+192.168.239.129    controller
+192.168.239.130    compute
+</pre>
+ <pre>vi /etc/resolv.conf
+
+nameserver 8.8.8.8</pre>
 </ul>
 <h6> 2.1.2 Cài đặt Network Time Protocol (NTP) </h6>
 <p><li> Cài đặt các packages </li></p>
