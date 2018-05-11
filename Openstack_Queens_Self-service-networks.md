@@ -593,4 +593,178 @@ root@controller:~# openstack network agent list
 +--------------------------------------+--------------------+------------+-------------------+-------+-------+---------------------------+
 root@controller:~#
 </pre>
+<pre>
+root@controller:~# openstack network create  --share --external \
+>   --provider-physical-network provider \
+>   --provider-network-type flat provider
++---------------------------+--------------------------------------+
+| Field                     | Value                                |
++---------------------------+--------------------------------------+
+| admin_state_up            | UP                                   |
+| availability_zone_hints   |                                      |
+| availability_zones        |                                      |
+| created_at                | 2018-05-11T09:03:19Z                 |
+| description               |                                      |
+| dns_domain                | None                                 |
+| id                        | 6013bb0e-baf7-4c3b-8bed-7f80f240ec8d |
+| ipv4_address_scope        | None                                 |
+| ipv6_address_scope        | None                                 |
+| is_default                | False                                |
+| is_vlan_transparent       | None                                 |
+| mtu                       | 1500                                 |
+| name                      | provider                             |
+| port_security_enabled     | True                                 |
+| project_id                | 74455f45a933413f81d9c36751c9dfd0     |
+| provider:network_type     | flat                                 |
+| provider:physical_network | provider                             |
+| provider:segmentation_id  | None                                 |
+| qos_policy_id             | None                                 |
+| revision_number           | 5                                    |
+| router:external           | External                             |
+| segments                  | None                                 |
+| shared                    | True                                 |
+| status                    | ACTIVE                               |
+| subnets                   |                                      |
+| tags                      |                                      |
+| updated_at                | 2018-05-11T09:03:20Z                 |
++---------------------------+--------------------------------------+
+</pre>
+<pre>
+root@controller:~# openstack subnet create --network provider \
+>   --allocation-pool start=192.168.239.180,end=192.168.239.200 \
+>   --dns-nameserver 8.8.8.8 --gateway 192.168.239.2 \
+>   --subnet-range 192.168.239.0/24 provider
++-------------------+--------------------------------------+
+| Field             | Value                                |
++-------------------+--------------------------------------+
+| allocation_pools  | 192.168.239.180-192.168.239.200      |
+| cidr              | 192.168.239.0/24                     |
+| created_at        | 2018-05-11T09:09:33Z                 |
+| description       |                                      |
+| dns_nameservers   | 8.8.8.8                              |
+| enable_dhcp       | True                                 |
+| gateway_ip        | 192.168.239.2                        |
+| host_routes       |                                      |
+| id                | f3efcc97-5539-4b04-8e88-ec063e749631 |
+| ip_version        | 4                                    |
+| ipv6_address_mode | None                                 |
+| ipv6_ra_mode      | None                                 |
+| name              | provider                             |
+| network_id        | 6013bb0e-baf7-4c3b-8bed-7f80f240ec8d |
+| project_id        | 74455f45a933413f81d9c36751c9dfd0     |
+| revision_number   | 0                                    |
+| segment_id        | None                                 |
+| service_types     |                                      |
+| subnetpool_id     | None                                 |
+| tags              |                                      |
+| updated_at        | 2018-05-11T09:09:33Z                 |
++-------------------+--------------------------------------+
+root@controller:~#
+</pre>
+Self service
+<pre> root@controller:~# openstack network create selfservice
++---------------------------+--------------------------------------+
+| Field                     | Value                                |
++---------------------------+--------------------------------------+
+| admin_state_up            | UP                                   |
+| availability_zone_hints   |                                      |
+| availability_zones        |                                      |
+| created_at                | 2018-05-11T09:11:14Z                 |
+| description               |                                      |
+| dns_domain                | None                                 |
+| id                        | 262b3f7b-5986-4083-9d1f-bc90b458c744 |
+| ipv4_address_scope        | None                                 |
+| ipv6_address_scope        | None                                 |
+| is_default                | False                                |
+| is_vlan_transparent       | None                                 |
+| mtu                       | 1450                                 |
+| name                      | selfservice                          |
+| port_security_enabled     | True                                 |
+| project_id                | 079d6eba304c476084e5d4b4c4f79d4e     |
+| provider:network_type     | None                                 |
+| provider:physical_network | None                                 |
+| provider:segmentation_id  | None                                 |
+| qos_policy_id             | None                                 |
+| revision_number           | 2                                    |
+| router:external           | Internal                             |
+| segments                  | None                                 |
+| shared                    | False                                |
+| status                    | ACTIVE                               |
+| subnets                   |                                      |
+| tags                      |                                      |
+| updated_at                | 2018-05-11T09:11:14Z                 |
++---------------------------+--------------------------------------+
+root@controller:~#
+</pre>
+<pre>
+
+root@controller:~# openstack subnet create --network selfservice \
+>   --dns-nameserver 8.8.8.8 --gateway 10.10.10.1 \
+>   --subnet-range 10.10.10.0/24 selfservice
++-------------------+--------------------------------------+
+| Field             | Value                                |
++-------------------+--------------------------------------+
+| allocation_pools  | 10.10.10.2-10.10.10.254              |
+| cidr              | 10.10.10.0/24                        |
+| created_at        | 2018-05-11T09:13:17Z                 |
+| description       |                                      |
+| dns_nameservers   | 8.8.8.8                              |
+| enable_dhcp       | True                                 |
+| gateway_ip        | 10.10.10.1                           |
+| host_routes       |                                      |
+| id                | 01cfcb2e-66c2-47f8-8f56-03fe4a7ef8b1 |
+| ip_version        | 4                                    |
+| ipv6_address_mode | None                                 |
+| ipv6_ra_mode      | None                                 |
+| name              | selfservice                          |
+| network_id        | 262b3f7b-5986-4083-9d1f-bc90b458c744 |
+| project_id        | 079d6eba304c476084e5d4b4c4f79d4e     |
+| revision_number   | 0                                    |
+| segment_id        | None                                 |
+| service_types     |                                      |
+| subnetpool_id     | None                                 |
+| tags              |                                      |
+| updated_at        | 2018-05-11T09:13:17Z                 |
++-------------------+--------------------------------------+
+root@controller:~#
+</pre>
+Taoj route 
+<pre>
+
+root@controller:~# openstack router create router
++-------------------------+--------------------------------------+
+| Field                   | Value                                |
++-------------------------+--------------------------------------+
+| admin_state_up          | UP                                   |
+| availability_zone_hints |                                      |
+| availability_zones      |                                      |
+| created_at              | 2018-05-11T09:14:01Z                 |
+| description             |                                      |
+| distributed             | False                                |
+| external_gateway_info   | None                                 |
+| flavor_id               | None                                 |
+| ha                      | False                                |
+| id                      | 5e0a6c49-5012-4dbd-bacd-d535cba4b000 |
+| name                    | router                               |
+| project_id              | 079d6eba304c476084e5d4b4c4f79d4e     |
+| revision_number         | 1                                    |
+| routes                  |                                      |
+| status                  | ACTIVE                               |
+| tags                    |                                      |
+| updated_at              | 2018-05-11T09:14:01Z                 |
++-------------------------+--------------------------------------+
+</pre>
+<pre>
+root@controller:~# neutron router-port-list router
++--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
+| id                                   | name | tenant_id                        | mac_address       | fixed_ips                                                                              |
++--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
+| 33b6b90b-909b-4a5e-a673-275eab67a938 |      | 079d6eba304c476084e5d4b4c4f79d4e | fa:16:3e:02:7b:80 | {"subnet_id": "01cfcb2e-66c2-47f8-8f56-03fe4a7ef8b1", "ip_address": "10.10.10.1"}      |
+| 63c0e5a3-0109-4eb7-a6b7-75fb5d80c9c8 |      |                                  | fa:16:3e:69:14:eb | {"subnet_id": "f3efcc97-5539-4b04-8e88-ec063e749631", "ip_address": "192.168.239.182"} |
++--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
+root@controller:~#
+</pre>
+
+
+
   // Đang hoàn thiện.
