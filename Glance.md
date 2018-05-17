@@ -248,7 +248,7 @@ Date: Thu, 17 May 2018 10:10:18 GMT
 
 {"status": "queued", "name": "curl-test", "tags": ["cirros"], "container_format": null, "created_at": "2018-05-17T10:10:18Z", "size": null, "disk_format": null, "updated_at": "2018-05-17T10:10:18Z", "visibility": "shared", "self": "/v2/images/049cf087-08f2-403b-8ddc-05be59a7220f", "min_disk": 0, "protected": false, "id": "049cf087-08f2-403b-8ddc-05be59a7220f", "file": "/v2/images/049cf087-08f2-403b-8ddc-05be59a7220f/file", "checksum": null, "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}root@controller:~#</pre>
 <li>Do image này mới tạo chưa được upload dữ liệu nên sẽ trong trạng thái “queued”</li>
-<h4>Cập nhật các thuộc tính của image<h4>
+<h4>Cập nhật các thuộc tính của image</h4>
 <p><li>Để cập nhật các thuộc tính của image, ta sử dụng phương thức PATCH gửi tới API dành riêng cho từng image (Mỗi image được tự động tạo ra một API riêng theo form sau: http://controller:9292/v2/images/<IMAGE_ID> )</li></p>
 <p></li>Ví dụ: cập nhật thuộc tính container_format và disk_format của image vừa tạo ta làm như sau:</li></p>
 <pre>root@controller:~# curl -i -X POST -H "X-Auth-Token: $OS_AUTH_TOKEN" \
