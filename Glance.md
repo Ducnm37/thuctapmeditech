@@ -166,6 +166,43 @@ MariaDB [glance]> select * from image_locations;
 
 MariaDB [glance]></pre>
 
+<h3>Sử dụng cURL</h3>
+<h4> Lấy token </h4>
+<pre>curl -i -X POST -H "Content-Type: application/json" -d '
+{
+"auth": {
+	"identity": {
+		"methods": ["password"],
+		"password": {
+			"user": {
+				"name": "admin",
+				"domain": { "name": "Default" },
+				"password": "Welcome123"
+			}
+		}
+	},
+	"scope": {
+		"project": {
+			"name": "admin",
+			"domain": { "name": "Default" }
+		}
+	}
+}
+}' http://localhost:5000/v3/auth/tokens</pre>
+<p> Kết quả thu được : </p>
+<pre>
+HTTP/1.1 201 Created
+Date: Thu, 17 May 2018 09:53:13 GMT
+Server: Apache/2.4.18 (Ubuntu)
+X-Subject-Token: gAAAAABa_VEKc7FsDAuMa8PUKgS4O93lZvX2Jwk8LniNDs07R1ZSY-ihi1gDXwma2GmhIPmROc2DnM6RFO-Wj7FR7cSJDNZSpUhqjt2Th5XknhRPN1sEYn0tDPPBMVs1jVYwNWbqLY28gzNZxAEZYdMCVVW-pMBopsFbnvN03gE9iHuW_qQLHw4
+Vary: X-Auth-Token
+X-Distribution: Ubuntu
+x-openstack-request-id: req-6718081d-1a0b-4e34-89eb-73d92ea81be1
+Content-Length: 3289
+Content-Type: application/json</pre>
+<h4>Lấy danh sách image</h4>
+
+
 
 
  
