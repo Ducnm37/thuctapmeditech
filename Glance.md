@@ -300,10 +300,9 @@ root@controller:~#</pre>
 	
 <h3>Sử dụng REST client</h3>	
 <p>Ta có thể sử dụng tiện ích trên Google chrome và Firefox là Advanced REST client:</p>
-
-<p><img scr="https://github.com/anhict/images/blob/master/Capture11.PNG"></p>
-<p><img scr="https://github.com/anhict/images/blob/master/Capture12.PNG"></p>
-<p><img scr="https://github.com/anhict/images/blob/master/Capture14.PNG"></p>
+<p><img scr="https://github.com/anhict/images/blob/master/39.PNG?raw=true"></p>
+<p><img scr="https://github.com/anhict/images/blob/master/40.PNG?raw=true"></p>
+<p><img scr="https://github.com/anhict/images/blob/master/41.PNG?raw=true"></p>
 
 
 
