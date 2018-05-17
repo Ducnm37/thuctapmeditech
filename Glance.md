@@ -298,8 +298,12 @@ root@controller:~#</pre>
 	-d @/root/cirros-0.3.4-x86_64-disk.img \
 	http://controller:9292/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8 /file</pre>
 	
-	
+<h3>Sử dụng REST client</h3>	
+<p>Ta có thể sử dụng tiện ích trên Google chrome và Firefox là Advanced REST client:</p>
 
+<img scr="https://github.com/anhict/images/blob/master/Capture11.PNG?raw=true">
+<img scr="https://github.com/anhict/images/blob/master/Capture12.PNG?raw=true">
+<img scr="https://github.com/anhict/images/blob/master/Capture14.PNG?raw=true">
 
 
 
