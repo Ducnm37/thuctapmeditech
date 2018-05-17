@@ -200,7 +200,106 @@ X-Distribution: Ubuntu
 x-openstack-request-id: req-6718081d-1a0b-4e34-89eb-73d92ea81be1
 Content-Length: 3289
 Content-Type: application/json</pre>
-<h4>Lấy danh sách image</h4>
+<p>Gán token vừa lấy được vào biến để sử dụng :</p>
+<pre>root@controller:~# export OS_AUTH_TOKEN=gAAAAABa_VEKc7FsDAuMa8PUKgS4O93lZvX2Jwk8LniNDs07R1ZSY-ihi1gDXwma2GmhIPmROc2DnM6RFO-Wj7FR7cSJDNZSpUhqjt2Th5XknhRPtDPPBMVs1jVYwNWbqLY28gzNZxAEZYdMCVVW-pMBopsFbnvN03gE9iHuW_qQLHw4</pre>
+
+
+<h4>List images</h4>
+<p>Để liệt kê tất cả các image: Sử dụng phương thức GET truy cập tới endpoint: http://controller:9292/v2/images/</p>
+<pre>root@controller:~#  curl -i   http://controller:9292/v2/images \
+>  -X GET \
+>  -H "X-Auth-Token: $OS_AUTH_TOKEN"
+HTTP/1.1 200 OK
+Content-Length: 1826
+Content-Type: application/json
+X-Openstack-Request-Id: req-51205f3a-2381-4977-94d7-d45dbd8f9fbd
+Date: Thu, 17 May 2018 10:01:05 GMT
+
+{"images": [{"status": "active", "name": "cirros1", "tags": [], "container_format": "bare", "created_at": "2018-05-17T09:29:32Z", "size": 13267968, "disk_format": "qcow2", "updated_at": "2018-05-17T09:29:33Z", "visibility": "public", "self": "/v2/images/99c50513-9d32-47cf-b4bf-7eec42339621", "min_disk": 0, "protected": false, "id": "99c50513-9d32-47cf-b4bf-7eec42339621", "file": "/v2/images/99c50513-9d32-47cf-b4bf-7eec42339621/file", "checksum": "f8ab98ff5e73ebab884d80c9dc9c7290", "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}, {"status": "active", "name": "cirros", "tags": [], "container_format": "bare", "created_at": "2018-05-17T09:29:01Z", "size": 13267968, "disk_format": "qcow2", "updated_at": "2018-05-17T09:29:03Z", "visibility": "public", "self": "/v2/images/95502eef-fadf-4f58-ad5f-bd3872822ed7", "min_disk": 0, "protected": false, "id": "95502eef-fadf-4f58-ad5f-bd3872822ed7", "file": "/v2/images/95502eef-fadf-4f58-ad5f-bd3872822ed7/file", "checksum": "f8ab98ff5e73ebab884d80c9dc9c7290", "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}, {"status": "active", "name": "cirros", "tags": [], "container_format": "bare", "created_at": "2018-05-11T07:46:08Z", "size": 13267968, "disk_format": "qcow2", "updated_at": "2018-05-11T07:46:09Z", "visibility": "public", "self": "/v2/images/d1019cd9-8dbf-4a0b-a33b-070798c85dab", "min_disk": 0, "protected": false, "id": "d1019cd9-8dbf-4a0b-a33b-070798c85dab", "file": "/v2/images/d1019cd9-8dbf-4a0b-a33b-070798c85dab/file", "checksum": "f8ab98ff5e73ebab884d80c9dc9c7290", "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}], "schema": "/v2/schemas/images", "first": "/v2/images"}root@controller:~# </pre>
+<h4> Lọc thông tin image được list ra </h4>
+<p>- Các trường thông tin image dùng để lọc thông tin tham khảo <a href="https://docs.openstack.org/developer/glance/glanceapi.html#filtering-images-lists" rel="nofollow">tại đây.</a></p>
+<p> - Để lọc thông tin dữ liệu ở đầu ra: ví dụ show ra thông tin các image có tên là cirros, thêm phần query lọc image có trường name là cirros như sau:</p>
+<pre>root@controller:~# curl -i   http://controller:9292/v2/images?name=cirros \
+>   -X GET \
+>   -H "X-Auth-Token: $OS_AUTH_TOKEN"</pre>
+<p>- Kết quả </p>
+<pre>HTTP/1.1 200 OK
+Content-Length: 1251
+Content-Type: application/json
+X-Openstack-Request-Id: req-d419751b-81f1-4eb9-a0c5-cd24625b1665
+Date: Thu, 17 May 2018 10:06:33 GMT
+
+{"images": [{"status": "active", "name": "cirros", "tags": [], "container_format": "bare", "created_at": "2018-05-17T09:29:01Z", "size": 13267968, "disk_format": "qcow2", "updated_at": "2018-05-17T09:29:03Z", "visibility": "public", "self": "/v2/images/95502eef-fadf-4f58-ad5f-bd3872822ed7", "min_disk": 0, "protected": false, "id": "95502eef-fadf-4f58-ad5f-bd3872822ed7", "file": "/v2/images/95502eef-fadf-4f58-ad5f-bd3872822ed7/file", "checksum": "f8ab98ff5e73ebab884d80c9dc9c7290", "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}, {"status": "active", "name": "cirros", "tags": [], "container_format": "bare", "created_at": "2018-05-11T07:46:08Z", "size": 13267968, "disk_format": "qcow2", "updated_at": "2018-05-11T07:46:09Z", "visibility": "public", "self": "/v2/images/d1019cd9-8dbf-4a0b-a33b-070798c85dab", "min_disk": 0, "protected": false, "id": "d1019cd9-8dbf-4a0b-a33b-070798c85dab", "file": "/v2/images/d1019cd9-8dbf-4a0b-a33b-070798c85dab/file", "checksum": "f8ab98ff5e73ebab884d80c9dc9c7290", "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}], "schema": "/v2/schemas/images", "first": "/v2/images?name=cirros"}root@controller:~#</pre>
+
+<h4>Tạo một image mới (chưa upload dữ liệu)</h4>
+<li>Để tạo một image mới, ta sử dụng phương thức POST gửi request tới API của Glance như sau:</li>
+<pre>root@controller:~# curl -i -X POST -H "X-Auth-Token: $OS_AUTH_TOKEN" \
+>     -H "Content-Type: application/json" \
+>     -d '{"name": "curl-test", "tags": ["cirros"]}' \
+>     http://controller:9292/v2/images</pre>
+<p> - Kết quả : </p>
+<pre>HTTP/1.1 201 Created
+Content-Length: 556
+Content-Type: application/json
+Location: http://controller:9292/v2/images/049cf087-08f2-403b-8ddc-05be59a7220f
+Openstack-Image-Import-Methods: glance-direct,web-download
+X-Openstack-Request-Id: req-a7af442a-e6f8-4720-b209-d71b3444bc63
+Date: Thu, 17 May 2018 10:10:18 GMT
+
+{"status": "queued", "name": "curl-test", "tags": ["cirros"], "container_format": null, "created_at": "2018-05-17T10:10:18Z", "size": null, "disk_format": null, "updated_at": "2018-05-17T10:10:18Z", "visibility": "shared", "self": "/v2/images/049cf087-08f2-403b-8ddc-05be59a7220f", "min_disk": 0, "protected": false, "id": "049cf087-08f2-403b-8ddc-05be59a7220f", "file": "/v2/images/049cf087-08f2-403b-8ddc-05be59a7220f/file", "checksum": null, "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}root@controller:~#</pre>
+<li>Do image này mới tạo chưa được upload dữ liệu nên sẽ trong trạng thái “queued”</li>
+<h4>Cập nhật các thuộc tính của image<h4>
+<p><li>Để cập nhật các thuộc tính của image, ta sử dụng phương thức PATCH gửi tới API dành riêng cho từng image (Mỗi image được tự động tạo ra một API riêng theo form sau: http://controller:9292/v2/images/<IMAGE_ID> )</li></p>
+<p></li>Ví dụ: cập nhật thuộc tính container_format và disk_format của image vừa tạo ta làm như sau:</li></p>
+<pre>root@controller:~# curl -i -X POST -H "X-Auth-Token: $OS_AUTH_TOKEN" \
+>     -H "Content-Type: application/json" \
+>     -d '{"name": "curl-test", "tags": ["cirros"]}' \
+>     http://controller:9292/v2/images
+HTTP/1.1 201 Created
+Content-Length: 556
+Content-Type: application/json
+Location: http://controller:9292/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8
+Openstack-Image-Import-Methods: glance-direct,web-download
+X-Openstack-Request-Id: req-e76219b6-d5dd-48e2-9ca0-43c01e09385c
+Date: Thu, 17 May 2018 10:17:23 GMT
+
+{"status": "queued", "name": "curl-test", "tags": ["cirros"], "container_format": null, "created_at": "2018-05-17T10:17:23Z", "size": null, "disk_format": null, "updated_at": "2018-05-17T10:17:23Z", "visibility": "shared", "self": "/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8", "min_disk": 0, "protected": false, "id": "04d2d654-e050-4665-8fc1-3767f08782b8", "file": "/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8/file", "checksum": null, "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}root@controller:~#</pre>
+
+
+<pre>
+root@controller:~# curl -i -X PATCH -H "X-Auth-Token: $OS_AUTH_TOKEN" \
+> -H "Content-Type: application/openstack-images-v2.1-json-patch" \
+> -d '
+> [
+>     {
+>         "op": "add",
+>         "path": "/disk_format",
+>         "value": "qcow2"
+>     },
+>     {
+>         "op": "add",
+>         "path": "/container_format",
+>         "value": "bare"
+>     }
+> ]' http://controller:9292/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8
+HTTP/1.1 200 OK
+Content-Length: 561
+Content-Type: application/json
+X-Openstack-Request-Id: req-69dc018c-a812-4b9c-84c2-fc6c9c8b2793
+Date: Thu, 17 May 2018 10:18:13 GMT
+
+{"status": "queued", "name": "curl-test", "tags": ["cirros"], "container_format": "bare", "created_at": "2018-05-17T10:17:23Z", "size": null, "disk_format": "qcow2", "updated_at": "2018-05-17T10:18:13Z", "visibility": "shared", "self": "/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8", "min_disk": 0, "protected": false, "id": "04d2d654-e050-4665-8fc1-3767f08782b8", "file": "/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8/file", "checksum": null, "owner": "74455f45a933413f81d9c36751c9dfd0", "virtual_size": null, "min_ram": 0, "schema": "/v2/schemas/image"}root@controller:~# ^C
+root@controller:~#</pre>
+
+<h4>Upload dữ liệu lên image</h4>
+
+<pre>curl -i -X PUT -H "X-Auth-Token: $OS_AUTH_TOKEN" \
+	-H "Content-Type: application/octet-stream" \
+	-d @/root/cirros-0.3.4-x86_64-disk.img \
+	http://controller:9292/v2/images/04d2d654-e050-4665-8fc1-3767f08782b8 /file</pre>
+	
+	
+
 
 
 
