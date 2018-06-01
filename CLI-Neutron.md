@@ -130,7 +130,6 @@ password = NOVA_PASS</pre>
 <pre>enable_ipset = true</pre>
 <p>Mở ipset để tăng hiệu quả của các quy tắc nhóm bảo mật</p>
 <pre> Cấu hình file /etc/neutron/plugins/ml2/linuxbridge_agent.ini </pre>
-<p>physical_interface_mappings = provider:PROVIDER_INTERFACE_NAME</p>
 <pre>[vxlan]
 enable_vxlan = false</pre>
 <p> Vô hiệu hóa vxlan </p>
@@ -142,4 +141,5 @@ firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver</
 interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true</pre>
-<p>cấu hình trình điều khiển giao diện cầu nối Linux, trình điều khiển DHCP Dnsmasq và kích hoạt metadata được phân lập để các trường hợp trên mạng của nhà cung cấp có thể truy cập metadata qua mạng</p>
+<p>cấu hình trình điều khiển giao diện brigde Linux, trình điều khiển DHCP Dnsmasq và kích hoạt metadata được phân lập để các trường hợp trên mạng của nhà cung cấp có thể truy cập metadata qua mạng</p>
+
