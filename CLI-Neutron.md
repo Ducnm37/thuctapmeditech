@@ -101,7 +101,7 @@ user_domain_name = default
 project_name = service
 username = neutron
 password = Welcome123</pre>
-<p>+ Cấu hình truy cập dịch vụ Identity </p>
+<p>+ Cấu hình truy cập dịch vụ Identity và cấu hình Networking để thông báo cho Compute về các thay đổi cấu trúc liên kết mạng:</p>
 <pre>[DEFAULT]
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
@@ -115,10 +115,31 @@ region_name = RegionOne
 project_name = service
 username = nova
 password = NOVA_PASS</pre>
-<p>+ cấu hình Networking để thông báo cho Compute về các thay đổi cấu trúc liên kết mạng</p>
 <p>+ Cấu hình ML2 plugin </p>
 <pre>type_drivers = flat,vlan</pre>
 <p>+ Loại driver được sử dụng </p>
 <p>* Flat : Tất cả các instances nằm trong cùng một mạng, và có thể chia sẻ với hosts. Không hề sử dụng VLAN tagging hay hình thức tách biệt về network khác.</p>
-
-
+<pre>tenant_network_types =</pre>
+<p>+ Vô hiệu hóa self-service networks </p>
+<pre>mechanism_drivers = linuxbridge</pre>
+<p>+ Cơ chế network sử dụng linuxbridge </p>
+<pre>extension_drivers = port_security</pre>
+<p>Kích hoạt trình điều khiển mở rộng bảo mật </p>
+<pre>flat_networks = provider</pre>
+<p>Cấu hình network sử dụng provider</pre>
+<pre>enable_ipset = true</pre>
+<p>Mở ipset để tăng hiệu quả của các quy tắc nhóm bảo mật</p>
+<pre> Cấu hình file /etc/neutron/plugins/ml2/linuxbridge_agent.ini </pre>
+<p>physical_interface_mappings = provider:PROVIDER_INTERFACE_NAME</p>
+<pre>[vxlan]
+enable_vxlan = false</pre>
+<p> Vô hiệu hóa vxlan </p>
+<pre>[securitygroup]
+enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver</pre>
+<p>Bật security groups và cấu hình Linux brigde iptables firewall drivers </p>
+<pre>[DEFAULT]
+interface_driver = linuxbridge
+dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+enable_isolated_metadata = true</pre>
+<p>cấu hình trình điều khiển giao diện cầu nối Linux, trình điều khiển DHCP Dnsmasq và kích hoạt metadata được phân lập để các trường hợp trên mạng của nhà cung cấp có thể truy cập metadata qua mạng</p>
