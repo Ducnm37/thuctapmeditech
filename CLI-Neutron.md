@@ -1,5 +1,5 @@
 
-Các lệnh cơ bản thường dùng trong Neutron
+<h3>1. Các lệnh cơ bản thường dùng trong Neutron</h3>
 
 <pre>root@controller:~# openstack network list
 +--------------------------------------+----------+--------------------------------------+
@@ -76,5 +76,49 @@ Các lệnh cơ bản thường dùng trong Neutron
 | 853d2bec-26b2-4557-9524-895721ceaa12 | Linux bridge agent | controller |                   | :-)   | True           | neutron-linuxbridge-agent |
 | a669c5a2-74e7-471c-b189-18c783e13760 | Metadata agent     | controller |                   | :-)   | True           | neutron-metadata-agent    |
 +--------------------------------------+--------------------+------------+-------------------+-------+----------------+---------------------------+</pre>
+
+<h3>2. Ghi chép file cấu hình Neutron </h3>
+<p>- Chỉnh sửa file /etc/neutron/neutron.conf </p>
+<p>+ Cấu hình truy cập cơ sở dữ liệu </p>
+<pre[database]
+connection = mysql+pymysql://neutron:Welcome123@controller/neutron</pre>
+<pre>[DEFAULT]
+core_plugin = ml2
+service_plugins =</pre>
+<p>+ Cấu hình plugin mà Neutron sẽ sử dụng. </p>
+
+<pre>transport_url = rabbit://openstack:RABBIT_PASS@controller</pre>
+<p>+ Cấu hình kết nối  RabbitMQ </p>
+<pre>auth_strategy = keystone</pre>
+<p>+ Loại hình xác thực sử dụng Keystone</p>
+<pre>[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = neutron
+password = Welcome123</pre>
+<p>+ Cấu hình truy cập dịch vụ Identity </p>
+<pre>[DEFAULT]
+notify_nova_on_port_status_changes = true
+notify_nova_on_port_data_changes = true
+
+[nova]
+auth_url = http://controller:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = nova
+password = NOVA_PASS</pre>
+<p>+ cấu hình Networking để thông báo cho Compute về các thay đổi cấu trúc liên kết mạng</p>
+<p>+ Cấu hình ML2 plugin </p>
+<pre>type_drivers = flat,vlan</pre>
+<p>+ Loại driver được sử dụng </p>
+<p>* Flat : Tất cả các instances nằm trong cùng một mạng, và có thể chia sẻ với hosts. Không hề sử dụng VLAN tagging hay hình thức tách biệt về network khác.</p>
 
 
