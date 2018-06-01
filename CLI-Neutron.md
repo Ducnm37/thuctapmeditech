@@ -142,4 +142,28 @@ interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true</pre>
 <p>cấu hình trình điều khiển giao diện brigde Linux, trình điều khiển DHCP Dnsmasq và kích hoạt metadata được phân lập để các trường hợp trên mạng của nhà cung cấp có thể truy cập metadata qua mạng</p>
+<pre>[neutron]
+# ...
+url = http://controller:9696
+auth_url = http://controller:35357
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = NEUTRON_PASS
+service_metadata_proxy = true
+metadata_proxy_shared_secret = METADATA_SECRET</pre>
+<p>+ Cấu hình tham số truy cập và và mở metadata proxy </p>
 
+<pre>su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
+  --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron</pre>
+<p>+ Đồng bộ dữ liệu </p>
+<pre>service nova-api restart </pre>
+<p>Restart lại nova-api </p>
+<pre># service neutron-server restart
+# service neutron-linuxbridge-agent restart
+# service neutron-dhcp-agent restart
+# service neutron-metadata-agent restart</pre>
+<p>Restart the Networking services.</p>
