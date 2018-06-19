@@ -94,4 +94,81 @@ root@controller:~#</pre>
 | 098c0f63-9626-4879-b654-566ce22f099a | m10.tiny | 400       | 5    | 0         |      | 1     | 1.0         | True      |
 +--------------------------------------+----------+-----------+------+-----------+------+-------+-------------+-----------+
 root@controller:~#</pre>
+<p>Xóa flavor, sử dụng câu lệnh nova flavor-delete </p>
+<h3>2. Quản lí và truy cập máy ảo sử dụng keypair</h3>
+<p>SSH cho phép bạn xác thực user bằng việc sử dụng private-public keypair. Máy ảo chạy với public key chỉ có thể được sử dụng bởi người nắm giữ private key.</p>
+
+<p>OpenStack có thể lưu public key và đưa nó vào bên trong instance ở thời điểm máy ảo được khởi chạy. Nhiệm vụ của bạn là phải giữ private key ở trạng thái bảo mật. Nếu bạn mấy key, bạn sẽ không thể lấy lại. Trong trường hợp đó bạn nên bỏ public key ở máy ảo và generate ra một cặp keys khác. Nếu ai đó có private key, họ sẽ có thể truy cập được vào máy ảo của bạn.</p>
+<p>Để tạo keypair, chạy câu lệnh sau:</p>
+<code>nova keypair-add apresskey1 > ~/apresskey</code>
+<pre>root@controller:~# cat ~/apresskey
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAosSPelcmK9lWn4TW/pClWozYAhZGlP+stPExgssu+yVgrJ1X
+43X/+tUF08+6kjSaW1dqYlstvTBubaZP1QGZaXbjEi8yeoxZG/AIHmeE1Wj8jZZw
+6fvlJtWzMCPdrdHpGoblUXSQB3b4xC1aiF6wMfp+nB2q2DRF6KcxfZijxU54B2UL
+NzQ9nMm8LOOsGhLin197JPyW1bMFnpiqvHPi1wmqDT78M4jq7WNu9eCfaaB//I6R
+vSSd0r3B1I0n2lwvcqT+hDgwFKi3N5k1zhhrx+4geWgVOpi7UwC0IB3gECzYFDoY
+aGCoJEhfJRdjfD85gbEE0vCr0B2po1oww4mv4wIDAQABAoIBADBbs8EGSWn3rXvB
+TNrfALGRbM/Z7GhyOc6cZjhUw4WMSleee7ExqrbMOWn/qo+rnzyKESpdqo4t6HEd
+W1SOoBSsZLRPX3D3Z7YcL11RJi79fSNX0f5Cf4d1MEKaNU9iMR5Xe6QivHPrTeeD
+DgW8FB8VLC6Xxd1sUmTX36VQB0AkIcrRylFyJHoIa5EcTnabJUfnpomHiScZb3Gi
+GPuXb/ZKf3hqvoCduaSW+FjHSx8OHEdVALe1SPq90FT8mWkpCECEmbVzqXzs3P+w
+e9YIjENQOcKTEOe2qT2TXfWNup32OSZuuTJ7r4bCmRMhLxrdIkUTmDQsw+xNqjim
+vY8TG+ECgYEAzZS8bLYNy/lOKIZvH2IR6dSXG28JMBwArPpCEmgUdHVtJe4pUl8e
+fLcCGSi0hMg7f6mt9sOfGbW1+88a6JDvTgmUauOitWS1mbZ6eT35SiozlZgdAIIX
+p1RvkqVkGk4Yj4f0KhsSXscIOWOjPxpFHAQN2Xd6HV/M9EvB8KjnLDMCgYEAyq/T
+2OCfhcq0LuD6RJq99Y6elaCZDdaTFj6vkirYvP7MyN9GllcMgz6kYFzG3htS5HUz
+1HyeKLkVdZlcBbPqlK+eGJ29NmqakOvY44awiqfHwUnBJ5c05o15nZUGeWnEkSrj
+rrrXYM0EndnTg0u298RfxTBnlG7mlf5mnWcovZECgYEAxJZssNBO1TTr5pjXfn07
+gA1JCnTdpmHAy6jssclRdiQsYc8jOJ+4+a3Pldt09Fy9eND7iDN82wsGoWtk4exm
+yosioCxaFXfeqMT0zSfUUXWVqoGxiiDdGagGoYcC+Jyho+9wLyuAH53YYXjETL2E
+RMwjqkc0QQ6xYRNovAfoOD0CgYBLK97UBqrjQgSFhmcLXqCpG9XxBHj/St+OVn1j
+JoTvw0hMD5LsWyiG3Iq2OnJ/GX8qv9UTL4yw6cPts40PiGSt9FwcIRR1xB/DM9Vi
+vSdopUVOiH4cotW51CqQqR6XlQSUGmYK/by3aBIYQRtTDJe1WJ10Url3sZHPe2Sv
+Z/0SIQKBgQCjGm131E4ON+f4seueR3txet3IqcZAqAmtkJ1dVwjEiu5shJTKaDaR
+FoUrznO1JVSoqSOp2PR9PqMrpZBy81oHozDIxJPuaPT4vEa3I7L9qK5ZaN/VkCiW
+RXJPMxNVif2qkNkjKxReVCpKzfGb8/D4eSbL8ckpyA5rfpOlpR+0fA==
+-----END RSA PRIVATE KEY-----
+
+root@controller:~#</pre>
+<p> - Kiểm tra danh sách keypair </p>
+<pre>root@controller:~# nova keypair-list
++------------+------+-------------------------------------------------+
+| Name       | Type | Fingerprint                                     |
++------------+------+-------------------------------------------------+
+| apresskey1 | ssh  | c1:e1:93:2f:db:94:21:44:c9:dc:b6:20:b9:21:b2:2d |
++------------+------+-------------------------------------------------+
+root@controller:~# openstack keypair list
++------------+-------------------------------------------------+
+| Name       | Fingerprint                                     |
++------------+-------------------------------------------------+
+| apresskey1 | c1:e1:93:2f:db:94:21:44:c9:dc:b6:20:b9:21:b2:2d |
++------------+-------------------------------------------------+
+root@controller:~#</pre>
+<p>Trước khi SSH client có thể dùng private key, bạn cần chắc chắn đã cấp quyền truy cập cho nó:</p>
+<pre>root@controller:~# chmod 600 apresskey
+root@controller:~# ls
+admin-openrc  apresskey  cirros-0.3.5-x86_64-disk.img  demo-openrc
+root@controller:~# ls -l apresskey
+-rw------- 1 root root 1680 Jun 19 09:18 apresskey
+root@controller:~#</pre>
+<h3>3. Khởi tạo, tắt và hủy máy ảo</h3>
+<p>Để khởi tạo một máy ảo, bạn cần cung cấp 3 yếu tố: tên máy ảo, flavor, và source của máy ảo. Source ở đây có thể là image, snapshot hoặc volume. Bạn cũng có thể thêm một vài yếu tố tùy chọn như keypair, security group, user data files, và volume.</p>
+<p>Dưới đây là câu lệnh để khởi rạo máy ảo:</p>
+<code>nova boot --flavor FLAVOR_ID --image IMAGE_ID --key-name KEY_NAME \
+ --user-data USER_DATA_FILE --security-groups SEC_GROUP_NAME --meta KEY=VALUE \ INSTANCE_NAME</code>
+ <p>- Để kết nối máy ảo vừa tạo với console trên trình duyệt bằng noVNC client, chạy câu lệnh sau:</p>
+ <pre>root@controller:~# nova get-vnc-console 1 novnc
++-------+--------------------------------------------------------------------------------------+
+| Type  | Url                                                                                  |
++-------+--------------------------------------------------------------------------------------+
+| novnc | http://192.168.239.129:6080/vnc_auto.html?token=53c90fbd-f8ad-4e95-8c21-a3b00f2ee19d |
++-------+--------------------------------------------------------------------------------------+
+root@controller:~#</pre>
+
+
+
+
+
+
 
