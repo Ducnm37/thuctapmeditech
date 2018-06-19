@@ -301,6 +301,207 @@ quota_key_pairs=100</pre>
 | server_group_members        | 10    |
 +-----------------------------+-------+
 root@controller:~#</pre>
+<pre>root@controller:~# nova usage-list
+Usage from 2018-05-22 to 2018-06-20:
++----------------------------------+---------+--------------+-----------+---------------+
+| Tenant ID                        | Servers | RAM MB-Hours | CPU Hours | Disk GB-Hours |
++----------------------------------+---------+--------------+-----------+---------------+
+| 74455f45a933413f81d9c36751c9dfd0 | 2       | 43014.96     | 672.11    | 672.11        |
++----------------------------------+---------+--------------+-----------+---------------+
+root@controller:~#</pre>
+<pre>root@controller:~# nova show vm01
++--------------------------------------+----------------------------------------------------------+
+| Property                             | Value                                                    |
++--------------------------------------+----------------------------------------------------------+
+| OS-DCF:diskConfig                    | AUTO                                                     |
+| OS-EXT-AZ:availability_zone          | nova                                                     |
+| OS-EXT-SRV-ATTR:host                 | compute1                                                 |
+| OS-EXT-SRV-ATTR:hostname             | vm01                                                     |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | compute1                                                 |
+| OS-EXT-SRV-ATTR:instance_name        | instance-00000006                                        |
+| OS-EXT-SRV-ATTR:kernel_id            |                                                          |
+| OS-EXT-SRV-ATTR:launch_index         | 0                                                        |
+| OS-EXT-SRV-ATTR:ramdisk_id           |                                                          |
+| OS-EXT-SRV-ATTR:reservation_id       | r-p5603cx8                                               |
+| OS-EXT-SRV-ATTR:root_device_name     | /dev/vda                                                 |
+| OS-EXT-SRV-ATTR:user_data            | -                                                        |
+| OS-EXT-STS:power_state               | 4                                                        |
+| OS-EXT-STS:task_state                | -                                                        |
+| OS-EXT-STS:vm_state                  | stopped                                                  |
+| OS-SRV-USG:launched_at               | 2018-06-19T03:14:32.000000                               |
+| OS-SRV-USG:terminated_at             | -                                                        |
+| accessIPv4                           |                                                          |
+| accessIPv6                           |                                                          |
+| config_drive                         |                                                          |
+| created                              | 2018-06-19T03:13:50Z                                     |
+| description                          | -                                                        |
+| flavor:disk                          | 1                                                        |
+| flavor:ephemeral                     | 0                                                        |
+| flavor:extra_specs                   | {}                                                       |
+| flavor:original_name                 | m1.nano                                                  |
+| flavor:ram                           | 64                                                       |
+| flavor:swap                          | 0                                                        |
+| flavor:vcpus                         | 1                                                        |
+| hostId                               | f16a249370d43d4c283a2f439276e8022bba7522b665dede4be144d9 |
+| host_status                          | UP                                                       |
+| id                                   | 9561c549-5564-420d-982e-e9db0f7f0324                     |
+| image                                | cirros1 (99c50513-9d32-47cf-b4bf-7eec42339621)           |
+| key_name                             | apresskey1                                               |
+| locked                               | False                                                    |
+| metadata                             | {}                                                       |
+| name                                 | vm01                                                     |
+| os-extended-volumes:volumes_attached | []                                                       |
+| security_groups                      | default                                                  |
+| selfservice network                  | 10.10.10.6                                               |
+| status                               | SHUTOFF                                                  |
+| tags                                 | []                                                       |
+| tenant_id                            | 74455f45a933413f81d9c36751c9dfd0                         |
+| updated                              | 2018-06-19T07:59:20Z                                     |
+| user_id                              | 913cb7b99aee4f39a4465deddc3c37ca                         |
++--------------------------------------+----------------------------------------------------------+
+root@controller:~#</pre>
+<pre>root@controller:~# openstack service show nova
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Compute                |
+| enabled     | True                             |
+| id          | 2967d2b73ece498dbc643cd881bb4b9c |
+| name        | nova                             |
+| type        | compute                          |
++-------------+----------------------------------+
+root@controller:~#</pre>
+<p>Bạn cũng sẽ có thể cần phải check log, bằng câu lệnh lsof, bạn có thể xem danh sách log và service đang sử dụng chúng:</p>
+<pre>root@controller:~# lsof /var/log/nova/*
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+nova-sche 2352 nova    3w   REG  252,0  1868001 1838745 /var/log/nova/nova-scheduler.log
+nova-api  2386 nova    3w   REG  252,0 12591175 1839151 /var/log/nova/nova-api.log
+nova-cond 2397 nova    3w   REG  252,0    46558 1838705 /var/log/nova/nova-conductor.log
+nova-cons 2404 nova    3w   REG  252,0    53629 1836807 /var/log/nova/nova-consoleauth.log
+nova-novn 2411 nova    3w   REG  252,0    40504 1838711 /var/log/nova/nova-novncproxy.log
+nova-api  2764 nova    3w   REG  252,0 12591175 1839151 /var/log/nova/nova-api.log
+nova-api  2767 nova    3w   REG  252,0 12591175 1839151 /var/log/nova/nova-api.log
+root@controller:~#</pre>
+<pre>root@controller:~# openstack hypervisor list
++----+---------------------+-----------------+-----------------+-------+
+| ID | Hypervisor Hostname | Hypervisor Type | Host IP         | State |
++----+---------------------+-----------------+-----------------+-------+
+|  1 | compute1            | QEMU            | 192.168.239.130 | up    |
++----+---------------------+-----------------+-----------------+-------+
+root@controller:~#</pre>
+<h3>6. Quản lí volume </h3>
+<p>Check xem nova servers đã được start hết hay chưa:</p>
+<pre>root@controller:~# systemctl status *nova* -n 0
+● nova-scheduler.service - OpenStack Compute Scheduler
+   Loaded: loaded (/lib/systemd/system/nova-scheduler.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-06-19 13:42:42 +07; 1h 52min ago
+ Main PID: 2352 (nova-scheduler)
+    Tasks: 1
+   Memory: 119.1M
+      CPU: 8.524s
+   CGroup: /system.slice/nova-scheduler.service
+           └─2352 /usr/bin/python /usr/bin/nova-scheduler --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-scheduler.log
+
+● nova-novncproxy.service - OpenStack Compute novncproxy
+   Loaded: loaded (/lib/systemd/system/nova-novncproxy.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-06-19 13:42:44 +07; 1h 52min ago
+ Main PID: 2411 (nova-novncproxy)
+    Tasks: 1
+   Memory: 116.2M
+      CPU: 4.036s
+   CGroup: /system.slice/nova-novncproxy.service
+           └─2411 /usr/bin/python /usr/bin/nova-novncproxy --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-novncproxy.log
+
+● nova-conductor.service - OpenStack Compute Conductor
+   Loaded: loaded (/lib/systemd/system/nova-conductor.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-06-19 13:42:44 +07; 1h 52min ago
+ Main PID: 2397 (nova-conductor)
+    Tasks: 1
+   Memory: 126.4M
+      CPU: 36.930s
+   CGroup: /system.slice/nova-conductor.service
+           └─2397 /usr/bin/python /usr/bin/nova-conductor --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-conductor.log
+
+● nova-consoleauth.service - OpenStack Compute Console
+   Loaded: loaded (/lib/systemd/system/nova-consoleauth.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2018-06-19 13:42:44 +07; 1h 52min ago
+ Main PID: 2404 (nova-consoleaut)
+    Tasks: 1
+   Memory: 115.7M
+      CPU: 9.529s
+   CGroup: /system.slice/nova-consoleauth.service
+           └─2404 /usr/bin/python /usr/bin/nova-consoleauth --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-consoleauth.log
+
+● nova-api.service - OpenStack Compute API
+   Loaded: loaded (/lib/systemd/system/nova-api.service; enabled; vendor preset: enabled)</pre>
+
+<p>Câu lệnh dùng để quản lí volume:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>server add volume</td>
+<td>Gán volume cho server</td>
+</tr>
+<tr>
+<td>volume create</td>
+<td>Thêm mới volume</td>
+</tr>
+<tr>
+<td>volume delete</td>
+<td>Xóa volume</td>
+</tr>
+<tr>
+<td>server remove volume</td>
+<td>Gỡ hoặc remove volume từ server</td>
+</tr>
+<tr>
+<td>volume list</td>
+<td>hiển thị danh sách các volume</td>
+</tr>
+<tr>
+<td>volume show</td>
+<td>Hiển thị thông tin chi tiết về volume</td>
+</tr>
+<tr>
+<td>snapshot create</td>
+<td>Tạo mới snapshot</td>
+</tr>
+<tr>
+<td>snapshot delete</td>
+<td>Xóa snapshot</td>
+</tr>
+<tr>
+<td>snapshot list</td>
+<td>Liệt kê danh sách snapshot</td>
+</tr>
+<tr>
+<td>snapshot show</td>
+<td>Hiển thị thông tin chi tiết về snapshot</td>
+</tr>
+<tr>
+<td>volume type create</td>
+<td>Tạo mới loại volume</td>
+</tr>
+<tr>
+<td>volume type delete</td>
+<td>Xóa flavor</td>
+</tr>
+<tr>
+<td>volume type list</td>
+<td>Hiển thi các loại volume đang hỗ trợ</td>
+</tr></tbody></table>
+
+
+
+
+
+
 
 
 
