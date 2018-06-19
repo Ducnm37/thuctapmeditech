@@ -242,7 +242,8 @@ root@controller:~#</pre>
 +--------------------------------------+--------------------+--------+
 root@controller:~#</pre>
 <pre>root@controller:~# glance image-download --file snapshot.raw f9d68b27-3c3b-48b2-87d4-6e02af9ad9a5</pre>
-
+<h3>5. Quản lí quota</h3>
+<p>Quota giới hạn số lượng resource. Số lượng resource mặc định được cho phép cho mỗi tenant được định nghĩa trong file config của nova (/etc/nova/nova.conf).</p>
 
 
 
