@@ -165,6 +165,24 @@ root@controller:~#</pre>
 | novnc | http://192.168.239.129:6080/vnc_auto.html?token=53c90fbd-f8ad-4e95-8c21-a3b00f2ee19d |
 +-------+--------------------------------------------------------------------------------------+
 root@controller:~#</pre>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_3.png">
+<p>Để xóa máy ảo, sử dụng câu lệnh nova delete</p>
+<pre>root@controller:~# nova list
++--------------------------------------+------+--------+------------+-------------+-------------------------+
+| ID                                   | Name | Status | Task State | Power State | Networks                |
++--------------------------------------+------+--------+------------+-------------+-------------------------+
+| 0fd9584b-21ed-4e0b-97ce-377524b91b18 | 1    | ACTIVE | -          | Running     | selfservice=10.10.10.10 |
+| 9561c549-5564-420d-982e-e9db0f7f0324 | vm01 | ACTIVE | -          | Running     | selfservice=10.10.10.6  |
++--------------------------------------+------+--------+------------+-------------+-------------------------+
+root@controller:~# nova delete 1
+Request to delete server 1 has been accepted.
+root@controller:~# nova list
++--------------------------------------+------+--------+------------+-------------+------------------------+
+| ID                                   | Name | Status | Task State | Power State | Networks               |
++--------------------------------------+------+--------+------------+-------------+------------------------+
+| 9561c549-5564-420d-982e-e9db0f7f0324 | vm01 | ACTIVE | -          | Running     | selfservice=10.10.10.6 |
++--------------------------------------+------+--------+------------+-------------+------------------------+
+root@controller:~#</pre>
 
 
 
