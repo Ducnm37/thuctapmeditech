@@ -183,6 +183,72 @@ root@controller:~# nova list
 | 9561c549-5564-420d-982e-e9db0f7f0324 | vm01 | ACTIVE | -          | Running     | selfservice=10.10.10.6 |
 +--------------------------------------+------+--------+------------+-------------+------------------------+
 root@controller:~#</pre>
+<p>Để start máy ảo, sử dụng <code>nova start ID </code> </p>
+<h3>4. Quản lí snapshot </h3>
+<p>OpenStack có thể tạo snapshot khi máy ảo đang chạy. snapshot tương tự như image, người dùng có thể tạo mới máy ảo từ snapshot.</p>
+
+<p>Kiểm tra xem có image hay máy ảo nào đang chạy không:</p>
+<pre>root@controller:~# openstack image list
++--------------------------------------+---------+--------+
+| ID                                   | Name    | Status |
++--------------------------------------+---------+--------+
+| 95502eef-fadf-4f58-ad5f-bd3872822ed7 | cirros  | active |
+| d1019cd9-8dbf-4a0b-a33b-070798c85dab | cirros  | active |
+| 99c50513-9d32-47cf-b4bf-7eec42339621 | cirros1 | active |
++--------------------------------------+---------+--------+</pre>
+<p>Tạo snapshot cho vm01 bằng câu lệnh: </p>
+<pre>root@controller:~# nova image-create vm01 vm01_snap</pre>
+<p>Kiểm tra </p>
+<pre>root@controller:~# openstack image list
++--------------------------------------+-----------+--------+
+| ID                                   | Name      | Status |
++--------------------------------------+-----------+--------+
+| 95502eef-fadf-4f58-ad5f-bd3872822ed7 | cirros    | active |
+| d1019cd9-8dbf-4a0b-a33b-070798c85dab | cirros    | active |
+| 99c50513-9d32-47cf-b4bf-7eec42339621 | cirros1   | active |
+| b9bb75e0-764d-42c8-b6fc-973780fdd977 | vm01_snap | active |
++--------------------------------------+-----------+--------+</pre>
+<pre>root@controller:~# nova list
++--------------------------------------+------+--------+------------+-------------+------------------------+
+| ID                                   | Name | Status | Task State | Power State | Networks               |
++--------------------------------------+------+--------+------------+-------------+------------------------+
+| 9561c549-5564-420d-982e-e9db0f7f0324 | vm01 | ACTIVE | -          | Running     | selfservice=10.10.10.6 |
++--------------------------------------+------+--------+------------+-------------+------------------------+
+root@controller:~# nova stop vm01
+Request to stop server vm01 has been accepted.
+root@controller:~#</pre>
+<pre>root@controller:~# nova list
++--------------------------------------+------+---------+------------+-------------+------------------------+
+| ID                                   | Name | Status  | Task State | Power State | Networks               |
++--------------------------------------+------+---------+------------+-------------+------------------------+
+| 9561c549-5564-420d-982e-e9db0f7f0324 | vm01 | SHUTOFF | -          | Shutdown    | selfservice=10.10.10.6 |
++--------------------------------------+------+---------+------------+-------------+------------------------+
+root@controller:~#</pre>
+<p>Sử dụng lệnh <code>nova image-create </code> tạo máy snapshot </p>
+<pre>root@controller:~# nova image-create --poll vm01 myInstanceSnapshot
+
+Server snapshotting... 100% complete
+Finished
+root@controller:~#</pre>
+<pre>root@controller:~# openstack image list
++--------------------------------------+--------------------+--------+
+| ID                                   | Name               | Status |
++--------------------------------------+--------------------+--------+
+| 95502eef-fadf-4f58-ad5f-bd3872822ed7 | cirros             | active |
+| d1019cd9-8dbf-4a0b-a33b-070798c85dab | cirros             | active |
+| 99c50513-9d32-47cf-b4bf-7eec42339621 | cirros1            | active |
+| f9d68b27-3c3b-48b2-87d4-6e02af9ad9a5 | myInstanceSnapshot | active |
+| b9bb75e0-764d-42c8-b6fc-973780fdd977 | vm01_snap          | active |
++--------------------------------------+--------------------+--------+
+root@controller:~#</pre>
+<pre>root@controller:~# glance image-download --file snapshot.raw f9d68b27-3c3b-48b2-87d4-6e02af9ad9a5</pre>
+
+
+
+
+
+
+
 
 
 
