@@ -59,7 +59,7 @@ root@controller:~# openstack flavor create --id 1 --vcpus 1 --ram 64 --disk 1 m1
 | vcpus                      | 1        |
 +----------------------------+----------+
 root@controller:~#</pre>
-<p>Hiển thị danh sách các flavor </p>
+<p>- Hiển thị danh sách các flavor </p>
 <pre>root@controller:~# openstack flavor list
 +----+---------+-----+------+-----------+-------+-----------+
 | ID | Name    | RAM | Disk | Ephemeral | VCPUs | Is Public |
@@ -67,7 +67,7 @@ root@controller:~#</pre>
 | 0  | m1.nano |  64 |    1 |         0 |     1 | True      |
 +----+---------+-----+------+-----------+-------+-----------+
 root@controller:~#</pre>
-<p>Hiển thị thông tin chi tiết 1 flavor</p>
+<p>- Hiển thị thông tin chi tiết 1 flavor</p>
 <pre>root@controller:~# openstack flavor show m1.nano
 +----------------------------+---------+
 | Field                      | Value   |
@@ -86,3 +86,12 @@ root@controller:~#</pre>
 | vcpus                      | 1       |
 +----------------------------+---------+
 root@controller:~#</pre>
+<p>Tạo mới flavor với tên m10.tiny có 5GB disk, 400MB RAM và 1 vCPU, sử dụng câu lệnh </p>
+<pre>root@controller:~# nova flavor-create --is-public true m10.tiny auto 400 5 1
++--------------------------------------+----------+-----------+------+-----------+------+-------+-------------+-----------+
+| ID                                   | Name     | Memory_MB | Disk | Ephemeral | Swap | VCPUs | RXTX_Factor | Is_Public |
++--------------------------------------+----------+-----------+------+-----------+------+-------+-------------+-----------+
+| 098c0f63-9626-4879-b654-566ce22f099a | m10.tiny | 400       | 5    | 0         |      | 1     | 1.0         | True      |
++--------------------------------------+----------+-----------+------+-----------+------+-------+-------------+-----------+
+root@controller:~#</pre>
+
