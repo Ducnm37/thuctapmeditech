@@ -242,10 +242,65 @@ root@controller:~#</pre>
 +--------------------------------------+--------------------+--------+
 root@controller:~#</pre>
 <pre>root@controller:~# glance image-download --file snapshot.raw f9d68b27-3c3b-48b2-87d4-6e02af9ad9a5</pre>
+<pre>root@controller:~# nova hypervisor-list
++--------------------------------------+---------------------+-------+---------+
+| ID                                   | Hypervisor hostname | State | Status  |
++--------------------------------------+---------------------+-------+---------+
+| c668a2d1-20e6-4afe-889f-092e42596fa5 | compute1            | up    | enabled |
++--------------------------------------+---------------------+-------+---------+
+root@controller:~#</pre>
+<pre>root@controller:~# nova hypervisor-servers compute1
++--------------------------------------+-------------------+--------------------------------------+---------------------+
+| ID                                   | Name              | Hypervisor ID                        | Hypervisor Hostname |
++--------------------------------------+-------------------+--------------------------------------+---------------------+
+| 9561c549-5564-420d-982e-e9db0f7f0324 | instance-00000006 | c668a2d1-20e6-4afe-889f-092e42596fa5 | compute1            |
++--------------------------------------+-------------------+--------------------------------------+---------------------+
+root@controller:~#</pre>
+
 <h3>5. Quản lí quota</h3>
 <p>Quota giới hạn số lượng resource. Số lượng resource mặc định được cho phép cho mỗi tenant được định nghĩa trong file config của nova (/etc/nova/nova.conf).</p>
+<pre># Number of instances allowed per project (integer value)
+quota_instances=10
+# Number of instance cores allowed per project (integer value)
+quota_cores=20
+# Megabytes of instance RAM allowed per project (integer value)
+quota_ram=51200
+# Number of floating IPs allowed per project (integer value)
+quota_floating_ips=10
+# Number of fixed IPs allowed per project (this should be at least the number
+# of instances allowed) (integer value)
+quota_fixed_ips=-1
+# Number of metadata items allowed per instance (integer value)
+quota_metadata_items=128
+# Number of injected files allowed (integer value)
+quota_injected_files=5
+# Number of bytes allowed per injected file (integer value)
+quota_injected_file_content_bytes=10240
+# Length of injected file path (integer value)
+quota_injected_file_path_length=255
+# Number of security groups per project (integer value)
+quota_security_groups=10
+# Number of security rules per security group (integer value)
+quota_security_group_rules=20
+# Number of key pairs per user (integer value)
+quota_key_pairs=100</pre>
 
-
+<pre>root@controller:~# nova quota-show
++-----------------------------+-------+
+| Quota                       | Limit |
++-----------------------------+-------+
+| instances                   | 10    |
+| cores                       | 20    |
+| ram                         | 51200 |
+| metadata_items              | 128   |
+| injected_files              | 5     |
+| injected_file_content_bytes | 10240 |
+| injected_file_path_bytes    | 255   |
+| key_pairs                   | 100   |
+| server_groups               | 10    |
+| server_group_members        | 10    |
++-----------------------------+-------+
+root@controller:~#</pre>
 
 
 
