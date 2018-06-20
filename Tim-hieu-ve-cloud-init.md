@@ -1,0 +1,2 @@
+<h3>1. Tổng quan về cloud init </h3>
+<p>Cloud-init là một phương pháp được sử dụng rộng rãi để tùy chỉnh một máy ảo Linux khi nó khởi động lần đầu tiên. Bạn có thể sử dụng điện toán đám mây-init để cài đặt các gói và ghi các tập tin, hoặc để cấu hình người dùng và bảo mật. Bởi vì đám mây-init được gọi trong quá trình khởi động ban đầu, không có bước bổ sung hoặc các đại lý cần thiết để áp dụng cấu hình của bạn.</p>
