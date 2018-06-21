@@ -1,5 +1,5 @@
 <h3>1. Tổng quan về cloud init </h3>
-<p>Cloud-init là một phương pháp được sử dụng rộng rãi để tùy chỉnh một máy ảo Linux khi nó khởi động lần đầu tiên. Bạn có thể sử dụng cloud-init để cài đặt các gói và ghi các tập tin, hoặc để cấu hình người dùng và bảo mật. Bởi vì cloud-init được gọi trong quá trình khởi động ban đầu, không có bước bổ sung hoặc các agents cần thiết để áp dụng cấu hình của bạn.</p>
+<p>Cloud-init là một công cụ được sử dụng để thực hiện các thiếp lập ban đầu đối với các máy ảo hóa và cloud. Dịch vụ này sẽ chạy trước quá trình boot, nó lấy dữ liệu từ bên ngoài và thực hiện một số tác động tới máy chủ.</p>
 <p>Các tác động mà cloud-init thực hiện phụ thuộc vào loại format thông tin mà nó tìm kiếm được. Các format hỗ trợ:</p>
 <ul>
 <li>Shell scripts (bắt đầu với #!)</li>
@@ -9,3 +9,5 @@
 <li>Cloud Boothook</li>
 </ul>
 <p>Một trong những định dạng thông dụng nhất dành cho các scripts đó là <code>cloud-config</code>.</p>
+<p>cloud-config là các file script được thiết kế để chạy trong các tiến trình cloud-init. Nó được sử dụng cho các cài đặt cấu hình ban đầu trên server như networking, SSH keys, timezone, user data injection...</p>
+<p>File config của cloud-init</p>
