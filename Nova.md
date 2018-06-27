@@ -496,20 +496,3 @@ root@controller:~#</pre>
 <td>volume type list</td>
 <td>Hiển thi các loại volume đang hỗ trợ</td>
 </tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
