@@ -54,7 +54,7 @@
 <img src="https://github.com/anhict/images/blob/master/migration-5.png">
 <img src="https://github.com/anhict/images/blob/master/migration-6.png">
 <h4>2.3. So sánh ưu nhược điểm giữa cold và live migrate</h4>
-<p>- Cold migrate</p>
+<p>- Cold migrate:</p>
 <ul>
 <li>Ưu điểm</li>
 <ul>
@@ -68,7 +68,7 @@
 <li>Quá trình migrate có thể mất một khoảng thời gian dài</li>  
 </ul>  
 </ul>
-<p>- Live migrate </p>
+<p>- Live migrate: </p>
 <ul>
 <li>Ưu điểm:</li>
 <ul>
@@ -84,6 +84,13 @@
     <li>Bạn không được can thiệp vào bất cứ tiến trình nào trong quá trình live migrate.</li>
     <li>Khó migrate với những máy ảo có dung lượng bộ nhớ lớn và trường hợp có 2 host khác CPU</li>
    </ul>
+</ul>
+<p>- Trong live-migrate có 2 loại đó là True live migrate và Block live migration </p>
+<img src="https://github.com/anhict/images/blob/master/migration-7.png">
+<p>- Ngữ cảnh sử dụng: </p>
+<ul>
+  <li>Nếu bạn buộc phải chọn host và giảm tối đa thời gian downtime của server thì nên chọn live-migrate (tùy vào loại storage sử dụng mà chọn true hoặc block migration).</li>
+  <li>Nếu bạn không muốn chọn host hoặc đã kích hoạt config drive (một dạng ổ lưu trữ metadata của máy ảo,thường được dùng để cung cấp  cấu hình netwwork khi không sử dụng DHCP) thì hãy lựa chọn cold migrate.</li>
 </ul>
 
 
