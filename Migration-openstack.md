@@ -46,7 +46,44 @@
 <li>Nếu là block migration,tạo thư mục instance,lưu lại các file bị mất từ Glance và tạo instance disk trống.</li></ul>
 <li>Trên source,khởi tạo tiến trình migration.</li>
 <li>Khi tiến trình hoàn tất,tái sinh file libvirt xml và define nó trên destination</li>
-  
+</ul>
+<p>Dưới đây minh hoạt cho quá trình live migrate VM:</p>
+<img src="https://github.com/anhict/images/blob/master/migration-2.png">
+<img src="https://github.com/anhict/images/blob/master/migration-3.png">
+<img src="https://github.com/anhict/images/blob/master/migration-4.png">
+<img src="https://github.com/anhict/images/blob/master/migration-5.png">
+<img src="https://github.com/anhict/images/blob/master/migration-6.png">
+<h4>2.3. So sánh ưu nhược điểm giữa cold và live migrate</h4>
+<p>- Cold migrate</p>
+<ul>
+<li>Ưu điểm</li>
+<ul>
+<li>Đơn giản,dễ thực hiện</li>
+<li>Thực hiện được với mọi loại máy ảo</li>
+</ul> 
+<li>Hạn chế:</li>
+<ul>
+<li>Thời gian downtime lớn</li>
+<li>Không thể chọn được host muốn migrate tới</li>
+<li>Quá trình migrate có thể mất một khoảng thời gian dài</li>  
+</ul>  
+</ul>
+<p>- Live migrate </p>
+<ul>
+<li>Ưu điểm:</li>
+<ul>
+<li>Có thể chọn host muốn migrate.</li>
+<li>Tiết kiệm chi phí,tăng sự linh hoạt trong khâu quản lí và vận hành.</li>
+<li>Giảm thời gian downtime và gia tăng thêm khả năng cứu hộ khi xảy ra sự cố.</li>
+</ul>
+</ul>
+<ul>
+  <li>Nhược điểm:</li>
+  <ul><li>Dù chọn được host nhưng vẫn có những giới hạn nhất định</li>
+    <li>Quá trình migrate có thể bị fails nếu host bạn chọn không đủ tài nguyên.</li>
+    <li>Bạn không được can thiệp vào bất cứ tiến trình nào trong quá trình live migrate.</li>
+    <li>Khó migrate với những máy ảo có dung lượng bộ nhớ lớn và trường hợp có 2 host khác CPU</li>
+   </ul>
 </ul>
 
 
