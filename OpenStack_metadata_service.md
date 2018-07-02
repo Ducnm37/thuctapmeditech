@@ -29,3 +29,17 @@ enable_metadata_proxy = false</pre>
 <h3>3. Làm thế nào Openstack VMs truy cập service metadata </h3>
 <h4>3.1 Truy cập metadata từ VM </h4>
 <p>Cloud-init truy cập vào địa chỉ URL của dịch vụ metadata là URL address,đây là địa chỉ đặc biệt AWS's Metadata service, cụ thể là địa chỉ IPv4 Link Local IP private (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), nó không thể được sử dụng để định tuyến Internet. Nó thường chỉ được sử dụng cho các mạng kết nối trực tiếp. Nếu hệ điều hành (Windows) không nhận được IP, nó có thể được cấu hình tự động như là một địa chỉ IP của phân đoạn mạng.http: //169.254.169.254 169.254.0.0/16 169.254.0.0/16</p>
+<p>Tại sao AWS chọn IP 169.254.169.254? Điều này là do việc chọn Link Local IP có thể tránh xung đột IP với người dùng. Tại sao lại chọn 169.254.169.254 IP này thay vì IP khác 169.254.0.0/24, có lẽ do nó dễ nhớ.</p>
+<p>Ngoài ra AWS có một số địa chỉ rất thú vị:</p>
+<pre>169.254.169.253: DNS service.
+169.254.169.123: NTP service.</pre>
+<p>Máy ảo OpenStack cũng thu thập thông tin cấu hình ban đầu của máy ảo: http://169.254.169.254</p>
+<pre>curl http://169.254.169.254/2009-04-04/meta-data</pre>
+<p>chúng ta có thể thấy từ service metadata, chúng ta có được uuid, hostname, project ID, availability_zone... của máy ảo.</p>
+<p>Làm cách nào một máy ảo có được thông tin metadata bằng cách truy cập địa chỉ này 169.254.169.254? Trước tiên hãy xem bảng định tuyến cho máy ảo tiếp theo:</p>
+<pre># route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.0.126      0.0.0.0         UG    0      0        0 eth0
+10.0.0.64       0.0.0.0         255.255.255.192 U     0      0        0 eth0
+169.254.169.254 10.0.0.66       255.255.255.255 UGH   0      0        0 eth0</pre>
