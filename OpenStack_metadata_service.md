@@ -4,9 +4,9 @@
 <p>– Thông tin về SSH Public Keys</p>
 <p>Chúng ta biết rằng máy ảo OpenStack được khởi tạo thông qua cloud-init, chẳng hạn như cấu hình card mạng, tên máy, password. Cloud-init là một tiến trình chạy bên trong một máy ảo. Nó thu thập thông tin cấu hình (metadata) của máy ảo thông qua datasource. Cloud-init triển khai nhiều nguồn dữ liệu khác nhau và các nguyên tắc triển khai nguồn dữ liệu khác nhau khác nhau. Có hai nguồn dữ liệu chính thường được sử dụng:</p>
 <p>ConfigDriver: Nova ghi tất cả thông tin cấu hình vào một raw file và gắn nó vào máy ảo thông qua cdrom. Tại thời điểm này, bạn có thể thấy / dev / sr0a thiết bị ảo tương tự như bên trong của máy ảo (Lưu ý: sr là viết tắt của scsi + rom). Cloud-init chỉ cần đọc thông tin / dev / sr0file để lấy thông tin cấu hình máy ảo.</p>
-<p>Metadata: Nova bắt đầu dịch vụ siêu dữ liệu HTTP local. Máy ảo chỉ cần truy cập dịch vụ siêu dữ liệu qua HTTP để lấy thông tin cấu hình máy ảo liên quan</p>
+<p>Metadata: Nova bắt đầu service metadata HTTP local. Máy ảo chỉ cần truy cập service metadata  qua HTTP để lấy thông tin cấu hình máy ảo liên quan</p>
 <p>Metadata giải quyết được các vấn đề </p>
-<p>Dịch vụ Metadata Nova được bắt đầu trên máy chủ (nút điều khiển nơi đặt nova-api). Mạng vật lý của tenant network và máy chủ bên trong máy ảo bị ngắt kết nối. Máy ảo truy cập dịch vụ siêu dữ liệu của Nova như thế nào?</p>
+<p>Dịch vụ Metadata Nova được bắt đầu trên máy chủ (nút điều khiển nơi đặt nova-api). Mạng vật lý của tenant network và máy chủ bên trong máy ảo bị ngắt kết nối. Máy ảo truy cập service metadata  của Nova như thế nào?</p>
 <p>Làm thế nào để dịch vụ metadata Nova biết VM nào đã khởi tạo yêu cầu.<p>
 <h3>2. Metadata service configuration</h3>
 <h4>2.1 Cấu hình Nova</h4>
@@ -169,9 +169,9 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
 <pre>curl 169.254.169.254 -> haproxy  -> UNIX Socket -> neutron-metadata-agent -> nova-api-metadata </pre>
 <p>Đó là, tổng cộng ba lần truyền lại là bắt buộc.</p>
 <h3>4. Metadata service có được thông tin máy ảo như thế nào</h3>
-<p>Phần trước chúng ta đã giới thiệu cách máy ảo OpenStack tiếp cận dịch vụ Siêu dữ liệu Nova qua 169.254.169.254. Sau đó, làm thế nào để bạn xác định máy ảo nào được gửi?<p>
+<p>Phần trước chúng ta đã giới thiệu cách máy ảo OpenStack tiếp cận service metadata  Nova qua 169.254.169.254. Sau đó, làm thế nào để bạn xác định máy ảo nào được gửi?<p>
 <p>Chúng ta biết rằng trong cùng một mạng Neutron, ngay cả khi có nhiều mạng con, sự sao chép IP không được cho phép, tức là, thông tin của Neutron có thể được xác định duy nhất bởi địa chỉ IP Cổng neutron sẽ thiết lập thông tin người dùng device_ididentifier.Đối với máy ảo, nó là uuid của máy ảo.</p>        
-<p>Do đó, tác nhân siêu dữ liệu-neutron có thể thu được uuid của máy ảo thông qua mạng uuid và ip máy ảo.</p>
+<p>Do đó, neutron-metadata-agent có thể thu được uuid của máy ảo thông qua mạng uuid và ip máy ảo.</p>
 <p>Cấu hình file haproxy</p>
 <pre>http-request add-header X-Neutron-Network-ID 2c4b658c-f2a0-4a17-9ad2-c07e45e13a8a</pre>
 <p>Nghĩa là, haproxy sẽ thêm id network vào tiêu đề yêu cầu trước khi nó được chuyển tiếp, và IP có thể thu được từ HTTP header X-Forwarded-For. neutron-metadata-agent có thể lấy được UUID và project ID ( tenant id) điều kiện của máy ảo.Chúng ta có thể xem các neutron-metadata-agent để có được máy ảo UUID và triển khai thực hiện project ID.</p>
