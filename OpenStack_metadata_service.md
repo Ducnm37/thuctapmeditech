@@ -283,6 +283,27 @@ network_data.json
 <h3>6. Tổng kết </h3>
 <p>Cuối cùng, tóm tắt thông qua biểu đồ luồng công việc:</p>
 <img src="https://github.com/anhict/images/blob/master/OpenStack-Metadata-Workflow.png">
+<p>Source code : </p>
+<pre>title OpenStack Metadata WorkFlow
+
+participant vm
+participant haproxy
+participant UNIX Socket
+participant neutron-metadata-agent
+participant nova-api-metadata
+
+vm -> haproxy: curl 169.254.169.254(第一次转发） 
+note over haproxy: Add header X-Neutron-Network-ID
+haproxy -> UNIX Socket: 第二次转发
+UNIX Socket -> neutron-metadata-agent: 第二次转发
+note over neutron-metadata-agent: get_instance_and_tenant_id
+note over neutron-metadata-agent: sign_instance_id
+neutron-metadata-agent -> nova-api-metadata: 第三次转发 
+note over nova-api-metadata: get_metadata_by_instance_id
+nova-api-metadata -> neutron-metadata-agent: metadata
+neutron-metadata-agent -> UNIX Socket: metadata
+UNIX Socket -> haproxy: metadata
+haproxy -> vm: metadata</pre>
 
 
-
+Link tham khảo : http://int32bit.me/2018/07/01/OpenStack-metadata%E6%9C%8D%E5%8A%A1%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/
