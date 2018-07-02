@@ -194,6 +194,36 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
     return hmac.new(secret, instance_id, hashlib.sha256).hexdigest()</pre>
     
 <code>metadata_proxy_shared_secret</code> <p>Quản trị viên cần phải định cấu hình và sau đó kết hợp uuid của máy ảo để tạo chuỗi ngẫu nhiên làm key.</p>   
+<p>Cuối cùng,neutron-metadata-agent thêm thông tin máy ảo vào header và thông tin header để gửi đến dịch vụ nova metadata như sau:</p>
+<pre>headers = {
+    'X-Forwarded-For': req.headers.get('X-Forwarded-For'),
+    'X-Instance-ID': instance_id,
+    'X-Tenant-ID': tenant_id,
+    'X-Instance-ID-Signature': self._sign_instance_id(instance_id)
+}</pre>
+<p>Tại thời điểm này, Nova Metadata có thể truy vấn thông tin metadata thông qua UUID của máy ảo.</p>
+<p>Code :</p>
+<pre>def get_metadata_by_instance_id(instance_id, address, ctxt=None):
+    ctxt = ctxt or context.get_admin_context()
+    attrs = ['ec2_ids', 'flavor', 'info_cache',
+             'metadata', 'system_metadata',
+             'security_groups', 'keypairs',
+             'device_metadata']
+    try:
+        im = objects.InstanceMapping.get_by_instance_uuid(ctxt, instance_id)
+    except exception.InstanceMappingNotFound:
+        LOG.warning('Instance mapping for %(uuid)s not found; '
+                    'cell setup is incomplete', {'uuid': instance_id})
+        instance = objects.Instance.get_by_uuid(ctxt, instance_id,
+                                                expected_attrs=attrs)
+        return InstanceMetadata(instance, address)
+
+    with context.target_cell(ctxt, im.cell_mapping) as cctxt:
+        instance = objects.Instance.get_by_uuid(cctxt, instance_id,
+                                                expected_attrs=attrs)
+        return InstanceMetadata(instance, address)
+</pre>        
+<h3>5. Cách lấy metadata bên ngoài máy ảo </h3>
 
 
 
