@@ -223,8 +223,66 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
                                                 expected_attrs=attrs)
         return InstanceMetadata(instance, address)
 </pre>        
-<h3>5. Cách lấy metadata bên ngoài máy ảo </h3>
+<h3>5. Cách lấy metadata VM bên ngoài máy ảo </h3>
+<p>Quá trình nhận metadata từ dịch vụ Nova metadata của máy ảo OpenStack đã được giới thiệu đôi khi chúng ta có thể cần gỡ lỗi thông tin metadata của máy ảo để xác minh rằng dữ liệu được truyền là chính xác, nhưng quá phiền hà khi nhập máy ảo Có cách nào để gọi trực tiếp dịch vụ nova-api-metadata để nhận thông tin máy ảo không?</p>
+<p> Có 2 kịch bản triển khai:</p>
+<p>+ Kịch bản đầu tiên <code>sign_instance.py</code>: </p>
+<pre>ign_instance.py
 
+import six
+import sys
+import hmac
+import hashlib
+
+def sign_instance_id(instance_id, secret=''):
+    if isinstance(secret, six.text_type):
+        secret = secret.encode('utf-8')
+    if isinstance(instance_id, six.text_type):
+        instance_id = instance_id.encode('utf-8')
+    return hmac.new(secret, instance_id, hashlib.sha256).hexdigest()
+print(sign_instance_id(sys.argv[1]))</pre>
+
+<p>+ Kịch bản thứ 2 <code>get_metadata.py</code> </p>
+<pre>#!/bin/bash
+metadata_server=http://192.168.1.16:8775
+metadata_url=$metadata_server/openstack/latest
+instance_id=$1
+data=$2
+if [[ -z $instance_id ]]; then echo "Usage: $0 <instance_id>"
+    exit 1
+fi tenant_id=$(nova show $instance_id | awk '/tenant_id/{print $4}')
+sign_instance_id=$(python sign_instance.py $instance_id)
+curl -sL -H "X-Instance-ID:$instance_id" -H "X-Instance-ID-Signature:$sign_instance_id" -H "X-Tenant-ID:$tenant_id"  $metadata_url/$data</pre>
+<p> Cách sử dụng như sau: </p>
+<pre># ./get_metadata.sh daf32a70-42c9-4d30-8ec5-3a5d97582cff
+meta_data.json
+password
+vendor_data.json
+network_data.json
+# ./get_metadata.sh daf32a70-42c9-4d30-8ec5-3a5d97582cff network_data.json | python -m json.tool
+{
+    "links": [
+        {
+            "ethernet_mac_address": "fa:16:3e:e8:81:9b",
+            "id": "tap28468932-9e",
+            "mtu": 1450,
+            "type": "ovs",
+            "vif_id": "28468932-9ea0-43d0-b699-ba19bf65cae3"
+        }
+    ],
+    "networks": [
+        {
+            "id": "network0",
+            "link": "tap28468932-9e",
+            "network_id": "2c4b658c-f2a0-4a17-9ad2-c07e45e13a8a",
+            "type": "ipv4_dhcp"
+        }
+    ],
+    "services": []
+}</pre>
+<h3>6. Tổng kết </h3>
+<p>Cuối cùng, tóm tắt thông qua biểu đồ luồng công việc:</p>
+<img src="https://github.com/anhict/images/blob/master/OpenStack-Metadata-Workflow.png">
 
 
 
