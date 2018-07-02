@@ -13,3 +13,19 @@
 <p>Tên dịch vụ metadata của Nova là nova-api-metadata, nhưng dịch vụ thường được hợp nhất với dịch vụ nova-api:</p>
 <pre>[DEFAULT]
 enabled_apis = osapi_compute,metadata</pre>
+<p>Ngoài ra, máy ảo để truy cập dịch vụ metadata của Nova cần Neutron để chuyển tiếp. Vì lý do này, ở đây chúng ta cần cấu hình file nova.conf :</p>
+<pre>[neutron]
+service_metadata_proxy = true</pre>
+<h4>2.2 Cấu hình Neutron </h4>
+<p>máy ảo truy cập dịch vụ metadata của Nova cần Neutron để chuyển tiếp nó, và nó có thể được chuyển tiếp bởi L3 agent hoặc được chuyển tiếp bởi DHCP agent. Có 2 lựa chọn:</p>
+<p>Thông qua chuyển tiếp l3-agent,mạng mà VM sử dụng được kết hợp với Router.</p>
+<p>Với chuyển tiếp DHCP agent, chức năng dhcp phải được kích hoạt trên mạng nơi máy ảo được cấu hình.</p>
+<p>Metadata được chuyển tiếp bởi L3-agent theo mặc định, nhưng trong thực tế, chức năng dhcp thường được bật trên mạng của máy ảo và không cần thiết phải sử dụng bộ định tuyến. Vì vậy,có thể sử dụng dhcp-agent để chuyển tiếp các gói tin. Cấu hình như sau:</p>
+<pre># /etc/neutron/dhcp_agent.ini [DEFAULT]
+force_metadata = true
+
+# /etc/neuron/l3_agent.ini [DEFAULT]
+enable_metadata_proxy = false</pre>
+<h3>3. Làm thế nào Openstack VMs truy cập service metadata </h3>
+<h4>3.1 Truy cập metadata từ VM </h4>
+<p>Cloud-init truy cập vào địa chỉ URL của dịch vụ metadata là URL address,đây là địa chỉ đặc biệt AWS's Metadata service, cụ thể là địa chỉ IPv4 Link Local IP private (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), nó không thể được sử dụng để định tuyến Internet. Nó thường chỉ được sử dụng cho các mạng kết nối trực tiếp. Nếu hệ điều hành (Windows) không nhận được IP, nó có thể được cấu hình tự động như là một địa chỉ IP của phân đoạn mạng.http: //169.254.169.254 169.254.0.0/16 169.254.0.0/16</p>
