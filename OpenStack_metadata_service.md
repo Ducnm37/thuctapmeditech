@@ -166,5 +166,33 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
     <p>/opt/stack/data/neutron/metadata_proxysocket file.</p>
  <p>Vì neutron-metadata-agent là quá trình trên controller node, nó chắc chắn tương thích với dịch vụ Nova metadata. Vấn đề về cách máy ảo OpenStack truy cập dịch vụ Nova Metadata về cơ bản đã được giải quyết.</p>
 <pre>curl 169.254.169.254 -> haproxy  -> UNIX Socket -> neutron-metadata-agent -> nova-api-metadata </pre>
+<p>Đó là, tổng cộng ba lần truyền lại là bắt buộc.</p>
+<h3>4. Metadata service có được thông tin máy ảo như thế nào</h3>
+<p>Phần trước chúng ta đã giới thiệu cách máy ảo OpenStack tiếp cận dịch vụ Siêu dữ liệu Nova qua 169.254.169.254. Sau đó, làm thế nào để bạn xác định máy ảo nào được gửi?<p>
+<p>Chúng ta biết rằng trong cùng một mạng Neutron, ngay cả khi có nhiều mạng con, sự sao chép IP không được cho phép, tức là, thông tin của Neutron có thể được xác định duy nhất bởi địa chỉ IP Cổng neutron sẽ thiết lập thông tin người dùng device_ididentifier.Đối với máy ảo, nó là uuid của máy ảo.</p>        
+<p>Do đó, tác nhân siêu dữ liệu-neutron có thể thu được uuid của máy ảo thông qua mạng uuid và ip máy ảo.</p>
+<p>Cấu hình file haproxy</p>
+<pre>http-request add-header X-Neutron-Network-ID 2c4b658c-f2a0-4a17-9ad2-c07e45e13a8a</pre>
+<p>Nghĩa là, haproxy sẽ thêm id network vào tiêu đề yêu cầu trước khi nó được chuyển tiếp, và IP có thể thu được từ HTTP header X-Forwarded-For. neutron-metadata-agent có thể lấy được UUID và project ID ( tenant id) điều kiện của máy ảo.Chúng ta có thể xem các neutron-metadata-agent để có được máy ảo UUID và triển khai thực hiện project ID.</p>
+<p>neutron/agent/metadata/agent.py</p>
+<pre>def _get_instance_and_tenant_id(self, req):
+    remote_address = req.headers.get('X-Forwarded-For')
+    network_id = req.headers.get('X-Neutron-Network-ID')
+    router_id = req.headers.get('X-Neutron-Router-ID')
+
+    ports = self._get_ports(remote_address, network_id, router_id)
+    if len(ports) == 1:
+        return ports[0]['device_id'], ports[0]['tenant_id']
+    return None, None</pre>
+<p>Nếu bất kỳ ai có thể yêu cầu fake Metadata để nhận thông tin Metadata của bất kỳ máy ảo nào, điều đó rõ ràng là không an toàn, vì vậy trước khi chuyển tiếp đến dịch vụ Nova metadata:</p>    
+<pre>def _sign_instance_id(self, instance_id):
+    secret = self.conf.metadata_proxy_shared_secret
+    secret = encodeutils.to_utf8(secret)
+    instance_id = encodeutils.to_utf8(instance_id)
+    return hmac.new(secret, instance_id, hashlib.sha256).hexdigest()</pre>
+    
+<code>metadata_proxy_shared_secret</code> <p>Quản trị viên cần phải định cấu hình và sau đó kết hợp uuid của máy ảo để tạo chuỗi ngẫu nhiên làm key.</p>   
+
+
 
 
