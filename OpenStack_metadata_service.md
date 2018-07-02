@@ -100,5 +100,71 @@ haproxy -f /opt/stack/data/neutron/ns-metadata-proxy/2c4b658c-f2a0-4a17-9ad2-c07
 <p>Chúng ta thấy rằng cổng liên kết haproxy là 80 và địa chỉ back-end là một file /opt/stack/data/neutron/metadata_proxy. Phần cuối không phải là địa chỉ IP/TCP, nó phải là một tệp UNIX Socket:</p>
 <pre># ll /opt/stack/data/neutron/metadata_proxy
 srw-r--r-- 1 stack stack 0 Jul  1 13:30 /opt/stack/data/neutron/metadata_proxy</pre>
+<p>Do đó, chúng ta kết luận rằng quá trình haproxy sẽ chuyển tiếp các yêu cầu metadata máy ảo OpenStack tới một tệp socket cục bộ.<p>
+<p>UNIX Domain Socket là một giao tiếp interprocess (IPC) được phát triển trên kiến trúc socket cho cùng một máy chủ. Nó không cần phải sao chép dữ liệu lớp ứng dụng từ một tiến trình này sang tiến trình khác thông qua ngăn xếp giao thức mạng. Nó tương tự như  Unix pipeline.</p>
+<p>Vấn đề tiếp theo:</p>
+<p>- Chúng ta thấy từ cấu hình haproxy, địa chỉ nghe là 0.0.0.0:80, nếu có nhiều mạng lắng nghe trên cổng 80 cùng một lúc, nó không phải là một xung đột cổng?</p>
+<p>- Sockets chỉ có thể được sử dụng cho truyền thông liên tiến trình trên cùng một máy chủ. Nếu dịch vụ Nova metadata và DHCP Neutron agent không nằm trên cùng một máy chủ, rõ ràng là không thể giao tiếp được.</p>
+<p>Vấn đề đầu tiên thực sự đã được giải quyết Haproxy được khởi động trong DHCP namespace của mạng nơi máy ảo cư trú. Chúng ta có thể xác minh rằng:</p>
+<pre># lsof -i :80
+COMMAND   PID  USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+haproxy 11334 stack    4u  IPv4 65729753      0t0  TCP *:http (LISTEN)
+# ip netns identify 11334
+qdhcp-2c4b658c-f2a0-4a17-9ad2-c07e45e13a8a</pre>
+<p>Ngoài ra, cần lưu ý rằng phiên bản mới của OpenStack được chuyển tiếp trực tiếp bằng cách sử dụng  haproxy agent. Trong một số phiên bản cũ hơn, neutron-ns-metadata-proxy chịu trách nhiệm chuyển tiếp.Việc triển khai thực hiện là neutron/agent/metadata/namespace_proxy.py:</p>
+<pre>def _proxy_request(self, remote_address, method, path_info,
+                       query_string, body):
+    headers = {
+        'X-Forwarded-For': remote_address,
+    }
+
+    if self.router_id:
+        headers['X-Neutron-Router-ID'] = self.router_id
+    else:
+        headers['X-Neutron-Network-ID'] = self.network_id
+
+    url = urlparse.urlunsplit((
+        'http',
+        '169.254.169.254',
+        path_info,
+        query_string,
+        ''))
+
+    h = httplib2.Http()
+    resp, content = h.request(
+        url,
+        method=method,
+        headers=headers,
+        body=body,
+        connection_type=agent_utils.UnixDomainHTTPConnection)</pre>
+        
+<p>Bạn có thể có câu hỏi về URL yêu cầu 169.254.169.254. Làm thế nào để bạn chuyển tiếp nó cho chính mình? Điều này là bởi vì đây là một yêu cầu Socket Domain UNIX. Trên thực tế, URL này chỉ là một trình giữ chỗ tham số. Việc bạn điền thông tin gì không quan trọng. Yêu cầu này tương đương với:</p>
+<pre>curl -H "X-Neutron-Network-ID: ${network_uuid}" \
+     -H "X-Forwarded-For: ${request_ip}" \
+     -X GET \
+     --unix /var/lib/neutron/metadata_proxy \
+     http://169.254.169.254</pre>
+<h4>3.4 Metadata Request lần 3 </h4>
+<p>Như đã đề cập trước đó, haproxy sẽ chuyển tiếp yêu cầu metadata đến một local socket file. Vậy, quá trình nào đang lắng nghe tệp socket proxy /opt/stack/data/neutron/metadata_proxy?</p>
+<pre># lsof /opt/stack/data/neutron/metadata_proxy
+COMMAND     PID  USER   FD   TYPE             DEVICE SIZE/OFF     NODE NAME
+neutron-m 11085 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stack/data/neutron/metadata_proxy
+neutron-m 11108 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stack/data/neutron/metadata_proxy
+neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stack/data/neutron/metadata_proxy
+# cat /proc/11085/cmdline  | tr '\0' ' '
+/usr/bin/python /usr/bin/neutron-metadata-agent --config-file /etc/neutron/neutron.conf</pre>
+<p>Có thể thấy rằng neutron-metadata-agent lắng nghe socket file này, tương đương với haproxy chuyển tiếp dịch vụ metadata tới dịch vụ neutron-metadata-agent thông qua socket file.</p>
+<pre>def run(self):
+    server = agent_utils.UnixDomainWSGIServer('neutron-metadata-agent')
+    server.start(MetadataProxyHandler(self.conf),
+                 self.conf.metadata_proxy_socket,
+                 workers=self.conf.metadata_workers,
+                 backlog=self.conf.metadata_backlog,
+                 mode=self._get_socket_mode())
+    self._init_state_reporting()
+    server.wait()</pre>
+    <p>/opt/stack/data/neutron/metadata_proxysocket file.</p>
+ <p>Vì neutron-metadata-agent là quá trình trên controller node, nó chắc chắn tương thích với dịch vụ Nova metadata. Vấn đề về cách máy ảo OpenStack truy cập dịch vụ Nova Metadata về cơ bản đã được giải quyết.</p>
+<pre>curl 169.254.169.254 -> haproxy  -> UNIX Socket -> neutron-metadata-agent -> nova-api-metadata </pre>
 
 
