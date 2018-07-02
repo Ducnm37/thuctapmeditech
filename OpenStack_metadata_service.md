@@ -136,8 +136,8 @@ qdhcp-2c4b658c-f2a0-4a17-9ad2-c07e45e13a8a</pre>
         method=method,
         headers=headers,
         body=body,
-        connection_type=agent_utils.UnixDomainHTTPConnection)</pre>
-        
+        connection_type=agent_utils.UnixDomainHTTPConnection)
+   </pre>     
 <p>Bạn có thể có câu hỏi về URL yêu cầu 169.254.169.254. Làm thế nào để bạn chuyển tiếp nó cho chính mình? Điều này là bởi vì đây là một yêu cầu Socket Domain UNIX. Trên thực tế, URL này chỉ là một trình giữ chỗ tham số. Việc bạn điền thông tin gì không quan trọng. Yêu cầu này tương đương với:</p>
 <pre>curl -H "X-Neutron-Network-ID: ${network_uuid}" \
      -H "X-Forwarded-For: ${request_ip}" \
@@ -162,7 +162,8 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
                  backlog=self.conf.metadata_backlog,
                  mode=self._get_socket_mode())
     self._init_state_reporting()
-    server.wait()</pre>
+    server.wait()
+</pre>    
     <p>/opt/stack/data/neutron/metadata_proxysocket file.</p>
  <p>Vì neutron-metadata-agent là quá trình trên controller node, nó chắc chắn tương thích với dịch vụ Nova metadata. Vấn đề về cách máy ảo OpenStack truy cập dịch vụ Nova Metadata về cơ bản đã được giải quyết.</p>
 <pre>curl 169.254.169.254 -> haproxy  -> UNIX Socket -> neutron-metadata-agent -> nova-api-metadata </pre>
@@ -183,7 +184,8 @@ neutron-m 11109 stack    3u  unix 0xffff8801c8711c00      0t0 65723197 /opt/stac
     ports = self._get_ports(remote_address, network_id, router_id)
     if len(ports) == 1:
         return ports[0]['device_id'], ports[0]['tenant_id']
-    return None, None</pre>
+    return None, None    
+</pre>
 <p>Nếu bất kỳ ai có thể yêu cầu fake Metadata để nhận thông tin Metadata của bất kỳ máy ảo nào, điều đó rõ ràng là không an toàn, vì vậy trước khi chuyển tiếp đến dịch vụ Nova metadata:</p>    
 <pre>def _sign_instance_id(self, instance_id):
     secret = self.conf.metadata_proxy_shared_secret
