@@ -21,4 +21,26 @@ scheduler_default_filters = RetryFilter, AvailabilityZoneFilter, RamFilter, Disk
 <li>Ở trong danh sách các group hosts (nếu có) (ServerGroupAffinityFilter)</li></ul>
 <p>Scheduler sẽ cache lại danh sách available hosts, dùng scheduler_driver_task_period để quy định thời gian danh sách được update.</p>
 <p>- Quá trình filter được lặp lại trên các compute nodes. Danh sách các hosts được chọn sẽ được sắp xếp sau bởi weighers. Scheduler sau đó sẽ chọn host theo số lượng các instances request. Nếu scheduler không thể chọn bất cứ host nào thì có nghĩa instance đó không thể được scheduled. Filter Scheduler có rất nhiều cơ chế filtering và weighting. Bạn cũng có thể tự chọn cho mình những giải thuật phù hợp.</p>
+<ul><li>AllHostsFilter : Không filter, được tạo máy ảo trên bất cứ host nào available.</li>
+<li>ImagePropertiesFilter : filter host dựa vào properties được định nghĩa trên instance’s image. Nó sẽ chọn các host có thể hỗ trợ các thông số cụ thể trên image được sử dụng bởi instance. ImagePropertiesFilter dựa vào kiến trúc, hypervisor type và virtual machine mode được định nghĩa trong instance. Ví dụ, máy ảo yêu cầu host hỗ trợ kiến trúc ARM thì ImagePropertiesFilter sẽ chỉ chọn những host đáp ứng yêu cầu này.</li>
+<li>AvailabilityZoneFilter : filter bằng availability zone. Các host phù hợp với availability zone được ghi trên instance properties sẽ được chọn. Nó sẽ xem availability zone của compute node và availability zone từ phần request.</li>
+<li>ComputeCapabilitiesFilter : Kiểm tra xem host compute service có đủ khả năng đáp ứng các yêu cầu ngoài lề (extra_specs) với instance type không. Nó sẽ chọn các host có thể tạo được instance type cụ thể. extra_specs chứa key/value pairs ví dụ như free_ram_mb (compared with a number, values like ">= 4096")</li>
+<li>ComputeFilter : Chọn tất cả các hosts đang được kích hoạt.</li>
+<li>CoreFilter : filter dựa vào mức độ sử dụng CPU core. Nó sẽ chọn host có đủ số lượng CPU core.</li>
+<li>AggregateCoreFilter : filter bằng số lượng CPU core với giá trị cpu_allocation_ratio .</li>
+<li>IsolatedHostsFilter : filter dựa vào image_isolated, host_isolated và restrict_isolated_hosts_to_isolated_images flags.</li>
+<li>JsonFilter : Cho phép sử dụng JSON-based grammar để lựa chọn host.</li>
+<li>RamFilter : filter bằng RAM, các hosts có đủ dung lượng RAM sẽ được chọn.</li>
+<li>AggregateRamFilter : filter bằng số lượng RAM với giá trị ram_allocation_ratio. ram_allocation_ratio ở đây là tỉ lệ RAM ảo với RAM vật lý (mặc định là 1.5)</li>
+<li>DiskFilter : filter bằng dung lượng disk. các hosts có đủ dung lượng disk sẽ được chọn.</li>
+<li>AggregateDiskFilter : filter bằng dung lượng disk với giá trị disk_allocation_ratio.</li>
+<li>NumInstancesFilter : filter dựa vào số lượng máy ảo đang chạy trên node compute đó. node nào có quá nhiều máy ảo đang chạy sẽ bị loại.</li>
+<li>Nếu chỉ số max_instances_per_host đươc thiết lập. Những node có số lượng máy ảo đạt ngưỡng max_instances_per_host sẽ bị ignored.</li>
+<li>AggregateNumInstancesFilter : filter dựa theo chỉ số max_instances_per_host.</li>
+<li>IoOpsFilter : filter dựa theo số lượng I/O operations.</li>
+<li>AggregateIoOpsFilter: filter dựa theo chỉ số max_io_ops_per_host.</li>
+<li>SimpleCIDRAffinityFilter : Cho phép các instance trên các node khác nhau có cùng IP block.</li>
+<li>DifferentHostFilter : Cho phép các instances đặt trên các node khác nhau.</li>
+<li>SameHostFilter : Đặt instance trên cùng 1 node.</li>
+<li>RetryFilter : chỉ chọn các host chưa từng được schedule.</li></ul>
 
