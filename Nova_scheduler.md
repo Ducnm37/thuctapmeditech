@@ -1,7 +1,7 @@
 <h3>1. Giới thiệu về nova-scheduler </h3>
 <p>Nova Scheduler hỗ trợ filtering và weighting để quyết định instance mới được tạo trên node Compute nào. Scheduler chỉ hỗ trợ nodes Compute.</p>
 <p> Tất cả các compute node sẽ public trạng thái của nó bao gồm tài nguyên hiện có và dung lượng phần cứng khả dụng cho nova-scheduler thông qua queue. nova-scheduler sau đó sẽ dựa vào những dữ liệu này để đưa ra quyết định khi có request.</p>
-<p>Quá trình filtering và weightering </p>
+<h3>2. Quá trình filtering và cấu hình </h3>
 <img src="https://github.com/anhict/images/blob/master/nova-scheduler1.png">
 <p>Cấu hình nova scheduler thông qua file /etc/nova/nova.conf </p>
 <pre>scheduler_driver_task_period = 60
@@ -43,4 +43,25 @@ scheduler_default_filters = RetryFilter, AvailabilityZoneFilter, RamFilter, Disk
 <li>DifferentHostFilter : Cho phép các instances đặt trên các node khác nhau.</li>
 <li>SameHostFilter : Đặt instance trên cùng 1 node.</li>
 <li>RetryFilter : chỉ chọn các host chưa từng được schedule.</li></ul>
+<h3>3. Cơ chế weighting và cấu hình </h3>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f553750356d32562e706e67.png">
+<p>Sau khi filter các node có thể tạo máy ảo, scheduler sẽ dùng weights để tìm kiếm host phù hợp nhất. Weights được tính toán trên từng host khi mà instance chuẩn bị được schedule, weight được tính toán bằng cách giám sát việc sử dụng tài nguyên của hệ thống. Chúng ta có thể cầu hình để cho các instance được tạo trên các host khác nhau hoặc tạo trên cùng 1 node cho tới khi tài nguyên của node đó cạn kiệt thì mới chuyển sang node tiếp theo.</p>
+<p>Nova scheduler tính toán mỗi weight với 1 configurable multiplier rồi sau đó cộng tất cả lại. Host có weight lớn nhất sẽ được ưu tiên. Cơ chế weights cũng cho phép bạn tạo 1 subnet gồm các node phù hợp rồi schedule sẽ lựa chọn ngẫu nhiên.</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f624362694c494c2e706e67.png">
+<h4>Cấu hình weighting</h4>
+<p>- Nếu cells được sử dụng, cells được weighted bởi scheduler tương tự như các hosts.</p>
+<p>- Hosts và cells được weighted dựa trên tùy chọn trong file /etc/nova/nova.conf :</p>
+<pre>[DEFAULT]
+scheduler_host_subset_size = 1
+scheduler_weight_classes = nova.scheduler.weights.all_weighers
+ram_weight_multiplier = 1.0
+io_ops_weight_multiplier = 2.0
+soft_affinity_weight_multiplier = 1.0
+soft_anti_affinity_weight_multiplier = 1.0
+[metrics]
+weight_multiplier = 1.0
+weight_setting = name1=1.0, name2=-1.0
+required = false
+weight_of_unavailable = -10000.0</pre>
+
 
