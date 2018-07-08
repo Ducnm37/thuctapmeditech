@@ -92,5 +92,27 @@
   <li>Nếu bạn buộc phải chọn host và giảm tối đa thời gian downtime của server thì nên chọn live-migrate (tùy vào loại storage sử dụng mà chọn true hoặc block migration).</li>
   <li>Nếu bạn không muốn chọn host hoặc đã kích hoạt config drive (một dạng ổ lưu trữ metadata của máy ảo,thường được dùng để cung cấp  cấu hình netwwork khi không sử dụng DHCP) thì hãy lựa chọn cold migrate.</li>
 </ul>
+<h3>3. Hướng dẫn cấu hình cold migrate trong OpenStack</h3>
+<li>Sử dụng với SSH tunneling để migrate máy ảo hoặc resize máy ảo ở node mới.</li>
+<p>Các bước cấu hình SSH Tunneling giữa các Nodes compute</p>
+<li>Cho phép user nova có thể login (thực hiện trên tất cả các node compute). Ví dụ ở đây ta muốn migrate vm từ node compute1 (192.168.239.191) tới node compute2 (192.168.239.192).</li>
+<pre>usermod -s /bin/bash nova</pre>
+<li>Thực hiện tạo key pair trên node compute nguồn cho user nova</li>
+<pre>su nova
+ssh-keygen
+echo 'StrictHostKeyChecking no' >> /var/lib/nova/.ssh/config
+exit</pre>
+<li>Thực hiện với quyền root, scp key pair tới compute node. Nhập mật khẩu khi được yêu cầu.</li>
+<pre>scp /var/lib/nova/.ssh/id_rsa.pub root@compute2:/root/</pre>
+<li>Trên node đích, thay đổi quyền của key pair cho user nova và add key pair đó vào SSH</li>
+<pre>mkdir -p /var/lib/nova/.ssh
+cat /root/id_rsa.pub >> /var/lib/nova/.ssh/authorized_keys
+echo 'StrictHostKeyChecking no' >> /var/lib/nova/.ssh/config
+chown -R nova:nova /var/lib/nova/.ssh</pre>
+<p>Từ node compute1 kiểm tra để chắc chắn rằng user nova có thể login được vào node compute2 còn lại mà không cần sử dụng password</p>
+<pre>su nova
+ssh 192.168.10.2
+exit</pre>
+<p>Thực hiện migrate máy ảo</p>
 
-
+  
