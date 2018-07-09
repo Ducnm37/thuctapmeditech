@@ -153,6 +153,10 @@ libvirtd_opts="-l"</pre>
 netstat -pantu | grep libvirtd
 virsh -c qemu+tcp://127.0.0.1/system</pre>
 <img src="https://github.com/anhict/images/blob/master/Screenshot_26.png">
+<p>Cấu hình iptables cho phép giao thông đi qua các cổng 16509 và 49152:</p>
+<pre>iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 5900:5909 -j ACCEPT
+iptables -A INPUT -p tcp --dport 16509 -j ACCEPT
+iptables -A INPUT -p tcp --dport 49152 -j ACCEPT</pre>
 <p>Nếu sử dụng block live migration cho các VMs boot từ local thì sửa file nova.conf bỏ comment rpc_backend = rabbit rồi restart lại dịch vụ nova-compute :</p>
 <pre>systemctl restart libvirtd.service</pre>
 <h4>Migrate máy ảo</h4>
