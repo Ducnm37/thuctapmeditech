@@ -114,5 +114,57 @@ chown -R nova:nova /var/lib/nova/.ssh</pre>
 ssh 192.168.10.2
 exit</pre>
 <p>Thực hiện migrate máy ảo</p>
+<li>Tắt máy ảo</li>
+<pre>nova stop Name_VM</pre>
+<p>Migrate vm, nova-scheduler sẽ dựa vào cấu hình blancing weitgh và filter để define ra node compute đích</p>
+<pre>nova migrate Name_VM</pre>
+<p>Chờ đến khi vm thay đổi trạng thái sang VERIFY_RESIZE (dùng nova show để xem), confirm việc migrate :</p>
+<pre>nova resize-confirm <Name_VM></pre>
+<h3>4. Hướng dẫn cấu hình live migrate (block migration) trong OpenStack</h3>
+<p>OpenStack hỗ trợ 2 loại live migrate, mỗi loại lại có yêu cầu và được sử dụng với mục đích riêng:</p>
+<ul>
+<li>True live migration (shared storage or volume-based) : Trong trường hợp này, máy ảo sẽ được di chuyển sửa dụng storage mà cả hai máy computes đều có thể truy cập tới. Nó yêu cầu máy ảo sử dụng block storage hoặc shared storage.</li>
+<li>Block live migration : Mất một khoảng thời gian lâu hơn để hoàn tất quá trình migrate bởi máy ảo được chuyển từ host này sang host khác. Tuy nhiên nó lại không yêu cầu máy ảo sử dụng hệ thống lưu trữ tập trung.</li>
+</ul>
+<p>Các yêu cầu chung:</p>
+<ul>
+<li>Cả hai node nguồn và đích đều phải được đặt trên cùng subnet và có cùng loại CPU.</li>
+<li>Cả controller và compute đều phải phân giải được tên miền của nhau.</li>
+<li>Compute node buộc phải sử dụng KVM với libvirt.</li>
+</ul>
+<p><strong>Cấu hình migration</strong></p>
+<p> Sửa lại file libvirt.conf dùng  vi /etc/libvirt/libvirtd.conf</p>
+<pre>listen_tls = 0
+listen_tcp = 1
+listen_addr = "0.0.0.0"
+unix_sock_group = "libvirtd"
+unix_sock_ro_perms = "0777"
+unix_sock_rw_perms = "0770"
+auth_unix_ro = "none"
+auth_unix_rw = "none"
+auth_tcp = "none"</pre>
+<p>Sửa lại file vi /etc/default/libvirt</p>
+<pre>start_libvirtd="yes"
+libvirtd_opts="-l"</pre>
+<p>Khởi động lại libvirtd</p>
+<pre>systemctl restart libvirtd.service</pre>
+<li>Kiểm tra lại </li>
+<pre>ps ax | grep [l]ibvirtd
+netstat -pantu | grep libvirtd
+virsh -c qemu+tcp://127.0.0.1/system</pre>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_26.png">
+<p>Nếu sử dụng block live migration cho các VMs boot từ local thì sửa file nova.conf bỏ comment rpc_backend = rabbit rồi restart lại dịch vụ nova-compute :</p>
+<pre>systemctl restart libvirtd.service</pre>
+<h4>Migrate máy ảo</h4>
+<p>Máy VM01 ở compute1 </p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_27.png">
+<p>Thực hiện migrate máy ảo bằng câu lệnh nova live-migration vm01 compute3 với những máy dùng shared storage. Đối với những máy boot từ local, sử dụng câu lệnh sau:</p>
+<pre>nova live-migration --block-migrate VM01 compute3</p>
+<p>Quá trình Migrating </p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_24.png">
+<p>Máy ảo vm01 đã được chuyển đến node compute3 </p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_25.png">
+
+
 
   
