@@ -24,3 +24,40 @@
 <p>Hình bên trên mô tả quy trình tạo Volume , tiếp theo chúng ta cùng đến với quy trình tạo ra volume mới của Cinder :</p>
 <img src="https://github.com/anhict/images/raw/master/14.png">
 
+<p>1.	Client yêu cầu tạo ra Volume thông qua việc gọi REST API (Client cũng có thể sử dụng tiện ích CLI của python-client)</p>
+
+<p>2.	Cinder-api : Quá trình xác nhận hợp lệ yêu cầu thông tin người dùng , một khi được xác nhận một message được gửi lên hàng chờ AMQP để xử lý.</p>
+
+<p>3.	Cinder-volume thực hiện quá trình đưa message ra khỏi hàng đợi , gửi thông báo tới cinder-scheduler để báo cáo xác định backend cung cấp volume.</p>
+
+<p>4.	Cinder-scheduler thực hiện quá trình báo cáo sẽ đưa thông báo ra khỏi hàng đợi , tạo danh sách các ứng viên dựa trên trạng thái hiện tại và yêu cầu tạo volume theo tiêu chí (kích thước, vùng sẵn có, loại volume (bao gồm cả thông số kỹ thuật bổ sung)).</p>
+
+<p>5.	Cinder-volume thực hiện quá trình đọc message phản hồi từ cinder-scheduler từ hàng đợi. Lặp lại qua các danh sách ứng viên bằng các gọi backend driver cho đến khi thành công.</p>
+
+<p>6.	NetApp Cinder tạo ra volume được yêu cầu thông qua tương tác với hệ thống lưu trữ con (phụ thuộc vào cấu hình và giao thức).</p>
+
+<p>7.	Cinder-volume thực hiện quá trình thu thập dữ liệu và metadata volume và thông tin kết nối để trả lại thông báo đến AMQP.</p>
+
+<p>8.	Cinder-api thực hiện quá trình đọc message phản hồi từ hàng đợi và đáp ứng tới client.</p>
+
+<p>9.	Client nhận được thông tin bao gồm trạng thái của yêu cầu tạo, Volume UUID, .... </p>
+<h4>3.2 Workflow của Cinder khi attact Volume</h3>
+<img src="https://github.com/anhict/images/raw/master/15.png">
+<p>1.	Client yêu cầu attach volume thông qua Nova REST API (Client có thể sử dụng tiện ích CLI của python-novaclient)</p>
+
+<p>2.	Nova-api thực hiện quá trình xác nhận yêu cầu và thông tin người dùng. Một khi đã được xác thực, gọi API Cinder để có được thông tin kết nối cho volume được xác định.</p>
+
+<p>3.	Cinder-api thực hiện quá trình xác nhận yêu cầu hợp lệ và thông tin người dùng hợp lệ . Một khi được xác nhận , một message sẽ được gửi đến người quản lý volume thông qua AMQP.</p>
+
+<p>4.	Cinder-volume tiến hành đọc message từ hàng đợi , gọi Cinder driver tương ứng với volume được gắn vào.</p>
+
+<p>5.	NetApp Cinder driver chuẩn bị Cinder Volume chuẩn bị cho việc attach (các bước cụ thể phụ thuộc vào giao thức lưu trữ được sử dụng).</p>
+
+<p>6.	Cinder-volume thưc hiện gửi thông tin phản hồi đến cinder-api thông qua hàng đợi AMQP.</p>
+
+<p>7.	Cinder-api thực hiện quá trình đọc message phản hồi từ cinder-volume từ hàng đợi; Truyền thông tin kết nối đến RESTful phản hồi gọi tới NOVA.</p>
+
+<p>8.	Nova tạo ra kết nối với bộ lưu trữ thông tin được trả về Cinder.</p>
+
+<p>9.	Nova truyền volume device/file tới hypervisor , sau đó gắn volume device/file vào máy ảo client như một block device thực thế hoặc ảo hóa (phụ thuộc vào giao thức lưu trữ).</p>
+<ul><li>Có 2 loại volume:</li><ul><li></li>-	Bootable<li>-	Non-bootable</li></ul></ul>
