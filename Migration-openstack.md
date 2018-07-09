@@ -142,7 +142,7 @@ unix_sock_ro_perms = "0777"
 unix_sock_rw_perms = "0770"
 auth_unix_ro = "none"
 auth_unix_rw = "none"
-auth_tcp = "none"</pre>
+auth_tcp = "none"</pre> 
 <p>Sửa lại file vi /etc/default/libvirt</p>
 <pre>start_libvirtd="yes"
 libvirtd_opts="-l"</pre>
