@@ -111,7 +111,7 @@ echo 'StrictHostKeyChecking no' >> /var/lib/nova/.ssh/config
 chown -R nova:nova /var/lib/nova/.ssh</pre>
 <p>Từ node compute1 kiểm tra để chắc chắn rằng user nova có thể login được vào node compute2 còn lại mà không cần sử dụng password</p>
 <pre>su nova
-ssh 192.168.10.2
+ssh 192.168.238.192
 exit</pre>
 <p>Thực hiện migrate máy ảo</p>
 <li>Tắt máy ảo</li>
