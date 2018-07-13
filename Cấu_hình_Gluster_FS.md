@@ -260,6 +260,19 @@ root@Gluster01:/mnt/brick1#</pre>
 <pre>root@Gluster02:/mnt/brick1# ls
 cirros-0.4.0-x86_64-disk.img
 root@Gluster02:/mnt/brick1#</pre>
+<pre>root@Gluster01:/mnt/brick1# gluster volume info
+
+Volume Name: testvol2
+Type: Replicate
+Volume ID: 838c81b1-0bdf-4737-a524-28dc9de4bf1e
+Status: Started
+Number of Bricks: 1 x 2 = 2
+Transport-type: tcp
+Bricks:
+Brick1: 192.168.239.247:/mnt/brick1
+Brick2: 192.168.239.248:/mnt/brick1
+root@Gluster01:/mnt/brick1#</pre>
+
 <p>Như vậy là tôi đã dựng xong bài lab với GlusterFS sử dụng Replicated Volume.</p>
 
 
