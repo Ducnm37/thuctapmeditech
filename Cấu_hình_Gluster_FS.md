@@ -106,7 +106,7 @@
 <td>192.168.239.199</td>
 <td>sda 20G cài OS</td>
 <td>Không có</td>
-<td>grafana</td>
+<td>Client</td>
 </tr></tbody></table>
 <img src="https://github.com/anhict/images/blob/master/Screenshot_42.png">
 <h3>3. Dựng lab Gluster</h3>
