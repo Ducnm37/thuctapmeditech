@@ -38,3 +38,27 @@
 </ul>
 <img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f53676f6c5654712e706e67.png">
 <p>Tại hình trên, chúng ta có thể thấy mỗi Node1, Node2, Node3 đã tạo 2 brick là /export/brick1 và /export/brick2, và từ 3 brick /export/brick1trên 3 Node tập hợp lại tạo thành volume music. Tương tự 3 brick /export/brick2 trên 3 Node tập hợp lại tạo thành volume Videos.</p>
+<h3>1.3 Một số loại volume cơ bản</h3>
+<p>Khi sử dụng GlusterFS có thể tạo nhiều loại volume và mỗi loại có được những tính năng khác nhau. Dưới đây là 5 loại volume cơ bản</p>
+<strong>Distributed volume:</strong>
+<p>Distributed Volume có những đặc điểm cơ bản sau:</p>
+<p>Dữ liệu được lưu trữ phân tán trên từng bricks, file1 nằm trong brick 1, file 2 nằm trong brick 2,...</p>
+<p>Vì metadata được lưu trữ trực tiếp trên từng bricks nên không cần thiết phải có một metadata server ở bên ngoài, giúp cho các tổ chức tiết kiệm được tài nguyên.</p>
+<p>Ưu điểm: mở rộng được dung lượng store ( dung lượng store bằng tổng dung lượng các brick)</p>
+<p>Nhược điểm: nếu 1 trong các brick bị lỗi, dữ liệu trên brick đó sẽ mất</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f5a41366438664f2e706e67.png">
+<strong>Replicated volume:</strong>
+<p>Dữ liệu sẽ được nhân bản đến những brick còn lại, trên tất cả các node và đồng bộ tất cả các nhân bản mới cập nhật.</p>
+<p>Đảm bảo tính nhất quán.</p>
+<p>Không giới hạn số lượng replicas.</p>
+<p>Ưu điểm: phù hợp với hệ thống yêu cầu tính sẵn sàng cao và dự phòng</p>
+<p>Nhược điểm: tốn tài nguyên hệ thống</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f48396d73424e482e706e67.png">
+<strong>Stripe volume:</strong>
+<p>Dữ liệu chia thành những phần khác nhau và lưu trữ ở những brick khác nhau, ( 1 file được chia nhỏ ra trên các brick )</p>
+<p>Ưu điểm : phù hợp với những môi trường yêu cầu hiệu năng, đặc biệt truy cập những file lớn.</p>
+<p>Nhược điểm: 1 brick bị lỗi volume không thể hoạt động được.</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f6e50496e59656e2e706e67.png">
+<strong>Distributed replicated:</strong>
+<p>Kết hợp từ distributed và replicated</p>
+
