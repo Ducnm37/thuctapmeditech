@@ -171,6 +171,105 @@ root@Gluster01:~# gluster volume create testvol2 rep 2 transport tcp 192.168.239
 volume create: testvol2: success: please start the volume to access data
 </pre>
 
+<strong>Giải thích cú pháp lệnh:</strong>
+<table>
+<thead>
+<tr>
+<th>Cú pháp</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gluster volume create</td>
+<td>Câu lệnh để tạo volume</td>
+</tr>
+<tr>
+<td>testvol2</td>
+<td>Tên volume</td>
+</tr>
+<tr>
+<td>rep</td>
+<td>Loại volume là replicated</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Số brick</td>
+</tr>
+<tr>
+<td>transport tcp</td>
+<td>Giao thức để liên lạc là tcp</td>
+</tr>
+<tr>
+<td>192.168.239.197:/mnt/brick1</td>
+<td>Đường dẫn của brick</td>
+</tr>
+<tr>
+<td>192.168.239.198:/mnt/brick1</td>
+<td>Đường dẫn của brick</td>
+</tr></tbody></table>
+
+<ul>
+<li>Bước 10: Sau khi tạo volume, tôi sẽ khởi động volume đó lên. Bước này có thể thực hiện trên cả 2 Server gluster</li>
+</ul>
+<h3>3.2 Các bước cấu hình trên client</h3>
+<p>Bước 1: Tải gói gluster client</p>
+<pre>apt-get install glusterfs-client -y</pre>
+<p>Bước 2: Mount volume về sử dụng</p>
+<pre>mount -t glusterfs 192.168.239.197:/testvol2 /mnt
+root@Client:~# mount -t glusterfs 192.168.239.247:/testvol2 /mnt
+root@Client:~# df -hT
+Filesystem                Type            Size  Used Avail Use% Mounted on
+udev                      devtmpfs        981M  4.0K  981M   1% /dev
+tmpfs                     tmpfs           199M  956K  198M   1% /run
+/dev/dm-0                 ext4             18G  1.3G   16G   8% /
+none                      tmpfs           4.0K     0  4.0K   0% /sys/fs/cgroup
+none                      tmpfs           5.0M     0  5.0M   0% /run/lock
+none                      tmpfs           992M     0  992M   0% /run/shm
+none                      tmpfs           100M     0  100M   0% /run/user
+/dev/sda1                 ext2            236M   40M  184M  18% /boot
+192.168.239.247:/testvol2 fuse.glusterfs   10G   33M   10G   1% /mnt
+root@Client:~#
+</pre>
+<p>Bước 3: Kiểm tra</p>
+<pre>root@Client:~# df -hT
+Filesystem                Type            Size  Used Avail Use% Mounted on
+udev                      devtmpfs        981M  4.0K  981M   1% /dev
+tmpfs                     tmpfs           199M  956K  198M   1% /run
+/dev/dm-0                 ext4             18G  1.3G   16G   8% /
+none                      tmpfs           4.0K     0  4.0K   0% /sys/fs/cgroup
+none                      tmpfs           5.0M     0  5.0M   0% /run/lock
+none                      tmpfs           992M     0  992M   0% /run/shm
+none                      tmpfs           100M     0  100M   0% /run/user
+/dev/sda1                 ext2            236M   40M  184M  18% /boot
+192.168.239.247:/testvol2 fuse.glusterfs   10G   33M   10G   1% /mnt
+root@Client:~#</pre>
+<p>Như vậy là tôi đã đứng trên client và mount về được volume đã tạo trên gluster server</p>
+<p>Sau đây tôi sẽ test thử tính năng của gluster</p>
+<h3>3.3 Kiểm tra khả năng hoạt động của Gluster FS</h3>
+<p>Để kiểm tra khả năng hoạt động của gluster tôi sẽ copy 1 file iso vào thư mục /mnt trên client tôi đã mount volume</p>
+<pre>
+root@Client:/mnt# ls
+cirros-0.4.0-x86_64-disk.img</pre>
+<p>Do ở đây tôi tạo replicated volume nên theo đặc tính của của loại volume này tôi sẽ nhìn thấy được dữ liệu cả ở trên 2 server gluster</p>
+<p>Bước 2: Kiểm tra trên server gluster01</p>
+<pre>root@Gluster01:/mnt/brick1# ls
+cirros-0.4.0-x86_64-disk.img
+root@Gluster01:/mnt/brick1#</pre>
+<p>Bước 3: Kiểm tra trên server gluster02</p>
+<pre>root@Gluster02:/mnt/brick1# ls
+cirros-0.4.0-x86_64-disk.img
+root@Gluster02:/mnt/brick1#</pre>
+<p>Như vậy là tôi đã dựng xong bài lab với GlusterFS sử dụng Replicated Volume.</p>
+
+
+
+
+
+
+
+
+
 
 
           
