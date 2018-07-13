@@ -109,5 +109,80 @@
 <td>grafana</td>
 </tr></tbody></table>
 <img src="https://github.com/anhict/images/blob/master/Screenshot_42.png">
+<h3>3. Dựng lab Gluster</h3>
+<p>Thực hiện các bước sau trên Server01</p>
+<p>Bước 1: Khai báo trong file /etc/hosts như sau</p>
+<pre>127.0.0.1       localhost
+127.0.1.1       gluster01
+192.168.239.247  gluster01
+192.168.239.246  Client
+192.168.239.248     gluster02</pre>
+<p>Bước khai báo trên giúp các node trong hệ thống có thể ping đến nhau thông qua hostname</p>
+<ul>
+<li>Bước 2: Phân vùng cho ổ cứng</li>
+</ul>
+<pre>fdisk /dev/sdb</pre>
+<ul>
+<li>Bước 3: Format phân vùng định dạng xfs. Trong 1 số trường hợp không có sẵn gói định dạng thì phải tải về</li>
+</ul>
+<pre>apt-get install xfsprogs -y
+mkfs.xfs /dev/sdb1</pre>
+<ul>
+<li>Bước 4: Mount partition vào thư mục /mnt và tạo thư mục /mnt/brick1</li>
+</ul>
+<pre>mount /dev/sdb1 /mnt && mkdir -p /mnt/brick1</pre>
+<ul>
+<li>Bước 5: Khai báo vào file cấu hình /etc/fstab để khi restart server, hệ thống sẽ tự động mount vào thư mục.</li>
+</ul>
+<pre>echo "/dev/sdb1 /mnt xfs defaults 0 0" >> /etc/fstab</pre>
+<ul>
+<li>Bước 6: Tải gói gluster server</li>
+</ul>
+<pre>apt-get install glusterfs-server -y</pre>
+<strong>Thực hiện các bước sau trên Gluster02</strong>
+<p>Phân vùng cho ổ cứng</p>
+<pre>fdisk /dev/sdb</pre>
+<p>Bước 3: Format phân vùng định dạng xfs. Trong 1 số trường hợp không có sẵn gói định dạng thì phải tải về</p>
+
+<pre>apt-get install xfsprogs -y
+mkfs.xfs /dev/sdb1</pre>
+<p>Bước 4: Mount partition vào thư mục /mnt và tạo thư mục /mnt/brick1</p>
+<pre>mount /dev/sdb1 /mnt && mkdir -p /mnt/brick1</pre>
+<p>Bước 5: Khai báo vào file cấu hình /etc/fstab để khi restart server, hệ thống sẽ tự động mount vào thư mục.</p>
+<pre>echo "/dev/sdb1 /mnt xfs defaults 0 0" >> /etc/fstab</pre>
+<p>Bước 6: Tải gói gluster server</p>
+<pre>apt-get install glusterfs-server -y</pre>
+<p>Bước 7: Tạo 1 pool storage với Server gluster01</p>
+<code>gluster peer probe 192.168.239.247</code>
+<p>Bước 8: Kiểm tra trạng thái của gluster pool</p>
+<pre>root@Gluster01:~# gluster peer status
+Number of Peers: 1
+
+Hostname: 192.168.239.248
+Port: 24007
+Uuid: cb5b087d-9df1-40f4-9913-a19eed0fe78e
+State: Peer in Cluster (Connected)</pre>
+<p>Như vậy tôi đã tạo 1 pool với 2 brick từ 2 node storage</p>
+<ul>
+<li>Bước 9: Sau đây tôi sẽ tạo 1 Volume Replicated</li>
+</ul>
+<pre>gluster volume create testvol2 rep 2 transport tcp 192.168.239.247:/mnt/brick1 192.168.239.248:/mnt/brick1
+root@Gluster01:~# gluster volume create testvol2 rep 2 transport tcp 192.168.239.247:/mnt/brick1 192.168.239.248:/mnt/brick1
+volume create: testvol2: success: please start the volume to access data
+</pre>
+
+
+
+          
+
+
+
+
+
+
+
+
+
+
           
 
