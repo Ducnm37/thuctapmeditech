@@ -61,4 +61,51 @@
 <img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f6e50496e59656e2e706e67.png">
 <strong>Distributed replicated:</strong>
 <p>Kết hợp từ distributed và replicated</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f62454f746753372e706e67.png">
+<p>Với mô hình trên, hệ thống sẽ yêu cầu cần tối thiểu 3 node, vừa có thể mở rộng được dung lượng lưu trữ, vừa tăng tính dự phòng cho hệ thống. Tuy nhiên, nếu đồng thời bị lỗi 2 node server1 và server2 hoặc 2 node server3 và server4 thì hệ thống sẽ không hoạt động được.</p>
+<strong>Distributed stripe volume:</strong>
+<p>Kết hợp từ Distributed và stripe. Do đó nó có hầu hết những thuộc tính hai loại trên và khi 1 node và 1 brick delete đồng nghĩa volume cũng không thể hoạt động được nữa.</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f765236463761322e706e67.png">
+<strong>Replicated stripe volume</strong>
+<p>Kết hợp từ replicated và stripe</p>
+<img src="https://github.com/anhict/images/blob/master/687474703a2f2f692e696d6775722e636f6d2f6e52696a754a792e706e67.png">
+<h3>2. Các bước chuẩn bị dựng lab GlusterFS</h3>
+<p>Sau đây là các bước chuẩn bị để dựng bài lab GlusterFS: IP Planing và Topology lab</p>
+<strong>2.1 IP Planing</strong>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>OS</th>
+<th>IP</th>
+<th>Disk 1</th>
+<th>Disk 2</th>
+<th>Hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server 01</td>
+<td>Ubuntu 14</td>
+<td>192.168.239.197</td>
+<td>sda 20G cài OS</td>
+<td>sdb 10G trống</td>
+<td>gluster01</td>
+</tr>
+<tr>
+<td>Server 02</td>
+<td>Ubuntu 14</td>
+<td>192.168.239.198</td>
+<td>sda 20G cài OS</td>
+<td>sdb 10G trống</td>
+<td>gluster02</td>
+</tr>
+<tr>
+<td>Client</td>
+<td>Ubuntu 14</td>
+<td>192.168.239.199</td>
+<td>sda 20G cài OS</td>
+<td>Không có</td>
+<td>grafana</td>
+</tr></tbody></table>
 
