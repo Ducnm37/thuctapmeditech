@@ -18,3 +18,31 @@
 <pre><code>/Share 192.168.1.1/28(rw)
 </code></pre>
 <h3>Cài đặt trên Ubuntu</h3>
+<h4>Installation</h4>
+<p>Cài đặt nfs trên server:</p>
+<pre><code>sudo apt-get install nfs-kernel-server
+</code></pre>
+<p>Trên client sẽ cài một gói nfs-common cung cấp chức năng nfs mà không bao gồm các thành phần server không cần thiết.</p>
+<pre><code>sudo apt-get install nfs-common
+</code></pre>
+<p>Khởi động nfs trên server và client:</p>
+<pre>root@nfsv:~# service nfs-kernel-server start
+root@nfsv:~# service nfs-kernel-server status
+● nfs-server.service - NFS server and services
+   Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; vendor preset: enabled)
+   Active: active (exited) since Fri 2018-07-13 17:17:14 +07; 48s ago
+ Main PID: 3416 (code=exited, status=0/SUCCESS)
+
+Jul 13 17:17:14 nfsv systemd[1]: Starting NFS server and services...
+Jul 13 17:17:14 nfsv exportfs[3413]: exportfs: can't open /etc/exports for reading
+Jul 13 17:17:14 nfsv systemd[1]: Started NFS server and services.
+Jul 13 17:17:15 nfsv systemd[1]: Started NFS server and services.
+Jul 13 17:17:57 nfsv systemd[1]: Started NFS server and services.
+root@nfsv:~#</pre>
+<p>Trên máy chủ, tôi sẽ tạo ra một thư mục để share các tệp tin và thay đôi quyền sở hữu tệp tin thành không sở hưu bởi ai cả:</p>
+<pre>root@nfsv:~# sudo mkdir /var/nfs/general -p
+root@nfsv:~# sudo chown nobody:nogroup /var/nfs/general</pre>
+<p>Sửa nội dung file <code>/etc/exports</code> để share cả thư mục vừa tạo và thư mục <code>/home</code></p>
+
+
+
