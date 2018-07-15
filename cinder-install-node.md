@@ -210,7 +210,7 @@ password = Welcome123
   
   
 [oslo_concurrency]
-lock_path = /var/lib/cinder/tmp
+lock_path = /var/lib/cinder/tmp</pre>
   
   
 <p>Đồng bộ dữ liệu Block Storage :</p>
@@ -224,6 +224,16 @@ os_region_name = RegionOne</pre>
 <p>Khởi động lại dịch vụ Block Storage  :</p>
 <pre>service cinder-scheduler restart
 service cinder-api restart</pre>
+<h4>Trên Node Cinder .</h4>
+<ul>
+<li>Thực hiện thêm repo OpenStack :</li>
+</ul>
+<div class="highlight highlight-source-shell"><pre> # apt install software-properties-common
+# add-apt-repository cloud-archive:queens</pre></div>
+<ul>
+<li>Cập nhật lại các gói phần mềm :</li>
+</ul>
+<div class="highlight highlight-source-shell"><pre> apt-get -y update <span class="pl-k">&amp;&amp;</span> apt-get -y dist-upgrade</pre></div>
 
 
 
