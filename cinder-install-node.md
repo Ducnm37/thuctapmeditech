@@ -234,10 +234,104 @@ service cinder-api restart</pre>
 <li>Cập nhật lại các gói phần mềm :</li>
 </ul>
 <div class="highlight highlight-source-shell"><pre> apt-get -y update <span class="pl-k">&amp;&amp;</span> apt-get -y dist-upgrade</pre></div>
+<ul>
+<li>Cài đặt LVM</li>
+</ul>
+<pre># apt install lvm2 thin-provisioning-tools</pre>
+<li>Tạo Physical volume :</li>
+<div class="highlight highlight-source-shell"><pre><span class="pl-c"><span class="pl-c">#</span> pvcreate /dev/sdb</span>
+Physical volume <span class="pl-s"><span class="pl-pds">"</span>/dev/sdb<span class="pl-pds">"</span></span> successfully created</pre></div>
+<li>Tạo volume group <code>cinder-volumes</code></li>
+<pre><span class="pl-c"><span class="pl-c">#</span> vgcreate cinder-volumes /dev/sdb</span>
+Volume group <span class="pl-s"><span class="pl-pds">"</span>cinder-volumes<span class="pl-pds">"</span></span> successfully created</pre>
+<ul>
+<li>
+<p>Theo mặc định công cụ quét của LVM sẽ quét toàn bộ thư mục /dev cho các thiết bị lưu trữ khối, dó đó chúng ta cần cấu hình lại
+cấu hình mặc định này để LVm chỉ quét những ở thư mục mà chúng ta cấu hình và cho phép tạo volume trên đó :</p>
+</li>
+<li>
+<p>Mở file cấu hình <code>/etc/lvm/lvm.conf</code> :</p>
+</li>
+</ul>
+<li>
+<p>Mở file cấu hình <code>/etc/lvm/lvm.conf</code> :</p>
+</li>
+<div class="highlight highlight-source-shell"><pre>filter = [ <span class="pl-s"><span class="pl-pds">"</span>a/sdb/<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>r/.*/<span class="pl-pds">"</span></span>]</pre></div>
+<ul>
+<li>cài đặt và cấu hình các dịch vụ thành phần :</li>
+</ul>
+<pre>apt install cinder-volume</pre>
+<ul>
+<li>Mở file <code>/etc/cinder/cinder.conf</code> và sửa lại như sau :</li>
+</ul>
+<pre>
+[database]
+connection = mysql+pymysql://cinder:Welcome123@controller/cinder
+[DEFAULT]
+
+transport_url = rabbit://openstack:Welcome123@controller
+auth_strategy = keystone
+my_ip = MANAGEMENT_INTERFACE_IP_ADDRESS  // IP node Cinder
+enabled_backends = lvm
+glance_api_servers = http://controller:9292
 
 
+[oslo_concurrency]
+lock_path = /var/lib/cinder/tmp
+
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+iscsi_protocol = iscsi
+iscsi_helper = tgtadm
 
 
+[keystone_authtoken]
+auth_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_id = default
+user_domain_id = default
+project_name = service
+username = cinder
+password = Welcome123</pre>
+<p>Cuối cùng chúng ta restart lại dịch vụ Block Storage bao gồm :</p>
+<pre>service tgt restart
+service cinder-volume restart</pre>
+<h3>2. Tạo volume và launch instane :</h3>
+<p>Kiểm tra các dịch vụ để kết nối với nhau thành công hay chưa :</p>
+
+<pre>root@controller:~# openstack volume service list
++------------------+-------------+------+---------+-------+----------------------------+
+| Binary           | Host        | Zone | Status  | State | Updated At                 |
++------------------+-------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller  | nova | enabled | up    | 2018-07-15T13:28:04.000000 |
+| cinder-volume    | cinder@lvm  | nova | enabled | up    | 2018-07-15T09:44:34.000000 |
+| cinder-volume    | cinder1@lvm | nova | enabled | up    | 2018-07-15T13:27:37.000000 |
+| cinder-scheduler | cinder1     | nova | enabled | up    | 2018-07-15T13:27:52.000000 |
++------------------+-------------+------+---------+-------+----------------------------+</pre>
+<ul>
+<li>Đăng nhập vào OpenStack từ Dashboard :</li>
+</ul>
+
+<img src="https://github.com/anhict/images/blob/master/Screenshot_51.png">
+<p>Chọn Project => Compute => volumes</p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_43.png">
+<p>Chọn Create Volume :</p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_44.png">
+<p>Nếu tạo volume thành công chúng ta sẽ nhận được trạng thái như sau :</p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_45.png">
+<p>Chọn Launch Instane để tạo một VM mới :</p>
+<img src="https://github.com/anhict/images/blob/master/Screenshot_47.png">
+<img src="https://github.com/anhict/images/blob/master/Screenshot_48.png">
+<img src="https://github.com/anhict/images/blob/master/Screenshot_49.png">
+<img src="https://github.com/anhict/images/blob/master/Screenshot_50.png">
+
+Tài liệu tham khảo :
+1. https://github.com/hocchudong/ghichep-OpenStack/blob/master/05-Cinder/docs/cinder-install.md
+2. https://docs.openstack.org/cinder/queens/install/cinder-controller-install-ubuntu.html
+3. https://docs.openstack.org/cinder/queens/install/cinder-storage-install-ubuntu.html
 
 
 
