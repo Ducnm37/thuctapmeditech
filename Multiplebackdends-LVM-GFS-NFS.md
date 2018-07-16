@@ -194,7 +194,7 @@ tmpfs                             488M     0  488M   0% /sys/fs/cgroup
 /dev/sda1                         472M   58M  390M  13% /boot
 tmpfs                              98M     0   98M   0% /run/user/0
 192.168.239.196:/testvol2          20G   33M   20G   1% /mnt
-root@gfs-client:~#<pre>
+root@gfs-client:~#</pre>
 
 <h3>2.5 Cài đặt NFS </h3>
 <ul>
