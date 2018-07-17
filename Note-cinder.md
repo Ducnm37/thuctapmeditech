@@ -1,6 +1,6 @@
 <h3>Các ghi chép về cinder</h3>
 <li>Có 2 cách sử dụng volume: </li>
-
+<img src="https://github.com/anhict/images/blob/master/cder.png">
 <li>Sử dụng để gắn vào máy ảo đã được tạo trước đó: <code>bootable = false</code></li>
 <li>Sử dụng để boot máy ảo: <code>bootable = true</code></li>
 <li>File chứa trong thư mục <code>/var/lib/cinder/volumes</code> các các file quản lý volume được tạo ra, trong đó có đường dẫn tới volume.</li>
@@ -18,6 +18,7 @@
 <ul>
 <li>Kiểm tra các volume trên LVM bằng lệnh:lvs hoặc lsblk </li>
 </ul>
+<img src="https://github.com/anhict/images/blob/master/cder1.png">
 <ul>
 <li>
 <p>Volume được tạo trên LVM KHÔNG sử dụng cơ chế <code>thin</code> để cấp phát dung lượng lưu trữ (tạo bao nhiêu cấp bấy nhiêu.)</p>
@@ -29,6 +30,7 @@
 <p>Nếu boot máy ảo từ volume, file máy ảo sẽ nằm trên node Cinder. Node compute sẽ mount tới node cinder thông qua iscsi: </p>
 </li>
 </ul>
+<img src="https://github.com/anhict/images/blob/master/cder2.png">
 <h3>Các lệnh về volume</h3>
 <ul>
 <li>Khởi động các dịch vụ của <code>Cinder</code></li>
@@ -68,7 +70,7 @@ openstack server remove volume INSTANCE_NAME VOLUME_NAME
 <span class="pl-c"><span class="pl-c">#</span> Ví dụ:</span>
 openstack server add volume vm01 volume01 <span class="pl-c"><span class="pl-c">#</span> Gắn vào máy ảo</span>
 
- openstack server remove volume vm99999000 vol01-demo <span class="pl-c"><span class="pl-c">#</span> Gỡ ra khỏi máy ảo.</span></pre></div>
+ openstack server remove volume vm01 vol01-demo <span class="pl-c"><span class="pl-c">#</span> Gỡ ra khỏi máy ảo.</span></pre></div>
 
 
 
