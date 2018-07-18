@@ -1,7 +1,7 @@
 <p>File cấu hình của Cinder nằm trong thư mục <code>/etc/cinder/cinder.conf</code></p>
 Tham khảo :
-https://docs.openstack.org/cinder/queens/install/cinder-storage-install-ubuntu.html#install-and-configure-components
-https://docs.openstack.org/cinder/queens/install/cinder-controller-install-ubuntu.html#install-and-configure-components
+<p>https://docs.openstack.org/cinder/queens/install/cinder-storage-install-ubuntu.html#install-and-configure-components</p>
+<p>https://docs.openstack.org/cinder/queens/install/cinder-controller-install-ubuntu.html#install-and-configure-components</p>
 
 <ul>
 <li>
