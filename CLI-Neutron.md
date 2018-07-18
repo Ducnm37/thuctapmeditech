@@ -145,16 +145,16 @@ enable_isolated_metadata = true</pre>
 <pre>[neutron]
 # ...
 url = http://controller:9696
-auth_url = http://controller:35357
+auth_url = http://controller:5000
 auth_type = password
 project_domain_name = default
 user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = neutron
-password = NEUTRON_PASS
+password = Welcome123 
 service_metadata_proxy = true
-metadata_proxy_shared_secret = METADATA_SECRET</pre>
+metadata_proxy_shared_secret = Welcome123</pre>
 <p>+ Cấu hình tham số truy cập và và mở metadata proxy </p>
 
 <pre>su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
