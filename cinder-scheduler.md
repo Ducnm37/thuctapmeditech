@@ -51,9 +51,7 @@
 <p><code>openstack volume create --hint different_host=Volume_A-UUID --hint different_host=Volume_B-UUID --size SIZE VOLUME_NAME</code></p>
 <p>hoặc</p>
 <p><code>openstack volume create --hint different_host="[Volume_A-UUID, Volume_B-UUID]" --size SIZE VOLUME_NAME</code></p>
-
-
-
+Tham khảo : https://docs.openstack.org/cinder/latest/cli/cli-cinder-scheduling.html
 
 
 
