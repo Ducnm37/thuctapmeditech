@@ -61,10 +61,9 @@ connection = mysql+pymysql://cinder:Welcome123@controller/cinder
 </ul>
 <p>Cấu hình mặc định cho volume backend là sử dụng local volumes quản lý bởi LVM. Driver này hỗ trợ giao thức iCSI.</p>
 <p>Cấu hình trong file <code>cinder.conf</code> như sau:</p>
-<pre><code>
-[DEFAULT]
+<pre>[DEFAULT]
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 iscsi_protocol = iscsi
 lvm_type = default		# Loại lvm volume (default, thin, hoặc auto)
-volume_group = cinder-volumes	# tên của volume group đã tạo cho lvm
-</code></pre>
+volume_group = cinder-volumes	# tên của volume group đã tạo cho lvm</pre>
+
